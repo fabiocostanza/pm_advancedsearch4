@@ -1,0 +1,482 @@
+/* ===== Search block (global) ===== */
+@font-face {
+    font-family: 'FontAwesomeAS4';
+    src: url('//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/fonts/fontawesome-webfont.eot?v=4.7.0');
+    src: url('//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/fonts/fontawesome-webfont.eot?#iefix&v=4.7.0') format('embedded-opentype'), url('//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/fonts/fontawesome-webfont.woff2?v=4.7.0') format('woff2'), url('//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/fonts/fontawesome-webfont.woff?v=4.7.0') format('woff'), url('//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/fonts/fontawesome-webfont.ttf?v=4.7.0') format('truetype'), url('//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/fonts/fontawesome-webfont.svg?v=4.7.0#fontawesomeregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+.PM_ASBlockOutput {
+    position: relative;
+}
+.PM_ASBlockOutputHorizontal {
+    border-style: solid;
+}
+
+/* Link for reseting search */
+.PM_ASResetSearch {
+    display: none;
+    text-decoration: none;
+    padding-bottom: 17px;
+}
+.PM_ASResetSearch:before {
+    content: "\f0e2";
+    font-family: "FontAwesome", "FontAwesomeAS4";
+    padding-right: 5px;
+}
+
+/* ===== Search block (vertical) ===== */
+/* Separation of criterion block on vertical block */
+.PM_ASBlockOutputVertical .PM_ASCriterions .PM_ASCriterionsGroupOuter {
+    margin-top: 10px;
+}
+
+/* Number products on vertical block */
+.PM_ASBlockOutputVertical .PM_ASBlockTitle {
+    display: block;
+}
+.PM_ASBlockOutputVertical .PM_ASBlockNbProductValue {
+    font-size: 65%;
+}
+
+/* Submit search on vertical block */
+.PM_ASBlockOutputVertical .PM_ASSubmitSearch {
+    margin-top: 10px;
+}
+
+/* ===== Search block (horizontal) ===== */
+.PM_ASBlockOutputHorizontal {
+    padding: 15px;
+    margin-bottom: 10px;
+}
+
+/* ===== Criterions group ===== */
+/* Reset group link */
+.PM_ASResetGroup {
+    font-size: 10px;
+    float: right;
+    margin-top: 5px;
+}
+.PM_ASResetGroup:before {
+    content: "\f00d";
+    font-family: "FontAwesome", "FontAwesomeAS4";
+    padding-right: 5px;
+}
+/* Skip group link */
+.PM_ASSkipGroup {
+    font-size: 10px;
+    float: right;
+    margin-top: 5px;
+}
+.PM_ASSkipGroup:after {
+    content: "\f051";
+    font-family: "FontAwesome", "FontAwesomeAS4";
+    padding-left: 5px;
+}
+/* vertical */
+.PM_ASBlockOutputVertical .PM_ASCriterionsGroupList .PM_ASCriterionsGroup {
+    margin-bottom: 15px;
+}
+.PM_ASBlockOutputVertical .PM_ASCriterionsGroupList .PM_ASCriterionsGroup:last-child {
+    margin-bottom: 0px;
+}
+.PM_ASBlockOutputVertical .PM_ASCriterionsGroup select {
+    width: 96%;
+}
+.PM_ASBlockOutputVertical .PM_ASCriterions .PM_ASCriterionsGroupTitle {
+    border-bottom: 1px solid #d6d4d4;
+    padding-bottom: 9px;
+}
+/* horizontal */
+.PM_ASBlockOutputHorizontal .PM_ASCriterionsGroup {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+.PM_ASBlockOutputHorizontal .PM_ASCriterionsGroup select {
+    width: 96%;
+}
+
+/* Hidden criterion group */
+.PM_ASShowCriterionsGroupHidden:before {
+    font-family: "FontAwesome", "FontAwesomeAS4";
+    padding-right: 5px;
+}
+.PM_ASShowCriterionsGroupHidden:before {
+    content: "\f105";
+}
+.PM_ASShowCriterionsGroupHidden.PM_ASShowCriterionsGroupHiddenOpen:before {
+    content: "\f107";
+}
+
+.PM_ASShowCriterionsGroupHidden {
+    text-align: center;
+    font-weight: bold;
+}
+.PM_ASCriterionsGroupHidden {
+    display: none;
+}
+
+/* Range value for slider */
+.PM_ASCritRange {
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+.PM_ASCritRangeValue {
+    display: block;
+    text-align: center;
+    margin-top: 5px;
+}
+
+/* Hide toggle link */
+.PM_ASCriterionHideToggleLink {
+    font-size: 10px;
+    margin-top: 10px;
+    display: block;
+}
+
+/* ===== Criterions ===== */
+ul.PM_ASCriterionGroupImage,
+ul.PM_ASCriterionGroupCheckbox {
+    list-style-type: none;
+}
+.PM_ASCriterionsSEOGroupDisabled,
+.PM_ASCriterionsSEOGroupDisabled a,
+.PM_ASCriterionsSEOGroupDisabled input {
+    cursor: default;
+}
+
+/* Criterion group display */
+ul.PM_ASCriterionGroupImage,
+.PM_ASCriterionGroupColor {
+    clear: both;
+}
+ul.PM_ASCriterionGroupImage li,
+.PM_ASCriterionGroupColor li {
+    display: inline-block;
+}
+ul.PM_ASCriterionGroupImage li a,
+.PM_ASCriterionGroupColor li a {
+    display: block;
+}
+
+/* Criterion display */
+.PM_ASCriterionHide,
+li.PM_ASCriterionHide {
+    display: none;
+}
+.PM_ASHide {
+    display: none;
+}
+.PM_ASHide:before, .PM_ASShow:before {
+    font-family: "FontAwesome", "FontAwesomeAS4";
+    padding-right: 5px;
+}
+.PM_ASHide:before {
+    content: "\f106";
+}
+.PM_ASShow:before {
+    content: "\f107";
+}
+
+/* Number of results on criterion */
+div.PM_ASCriterionNbProduct {
+    opacity: 0.6;
+    display: inline;
+}
+
+/* Color square size */
+.PM_ASCriterionGroupColor li a {
+    width: 15px;
+    height: 15px;
+}
+.PM_ASCriterionGroupColor.color_to_pick_list li, .PM_ASCriterionGroupLinkColor span.PM_ASCriterionColorSquare {
+    border: 1px solid #D6D4D4;
+    display: inline-block;
+    float: none;
+}
+.PM_ASCriterionGroupColor.color_to_pick_list li a, .PM_ASCriterionGroupLinkColor span.PM_ASCriterionColorSquare {
+    width: 23px;
+    height: 23px;
+    margin: 1px!important;
+    background-size: 100% 100% !important;
+}
+.PM_ASCriterionGroupColor.color_to_pick_list li.PM_ASCriterionHide, ul.PM_ASCriterionGroupImage li.PM_ASCriterionHide {
+    display: none;
+}
+
+/* Selected => image and square color */
+.PM_ASCriterionGroupImage .PM_ASCriterionLink,
+.PM_ASCriterionGroupColor .PM_ASCriterionLink {
+    margin: 4px!important;
+}
+.PM_ASCriterionGroupImage .PM_ASCriterionLinkSelected,
+.PM_ASCriterionGroupColor .PM_ASCriterionLinkSelected {
+    border: 2px solid #999;
+    margin: 2px!important;
+}
+
+/* Selected => link */
+.PM_ASCriterionGroupLink .PM_ASCriterionLinkSelected,
+.PM_ASCriterionGroupLink .PM_ASCriterionLink:hover {
+    font-weight: bold;
+}
+.PM_ASCriterionGroupLink:not(.PM_ASCriterionGroupLinkColor) .PM_ASCriterionLink:before {
+    content: "\f105";
+    font-family: "FontAwesome", "FontAwesomeAS4";
+    padding-right: 5px;
+}
+
+/* Criterion group (color, but not square only) */
+.PM_ASCriterionGroupLinkColor .PM_ASCriterionLink {
+    height: 23px;
+    line-height: 23px;
+    margin-bottom: 3px;
+    display: block;
+}
+.PM_ASCriterionGroupLinkColor .PM_ASCriterionLink .PM_ASCriterionValue {
+    line-height: 23px;
+    display: block;
+}
+.PM_ASCriterionGroupLinkColor span.PM_ASCriterionColorSquare {
+    margin: 0 6px 0 0 !important;
+    display: block;
+    float: left;
+}
+
+/* Selected class for label with link to SEO pages */
+.PM_ASCriterionGroupCheckbox .PM_ASLabelCheckboxSelected .PM_ASLabelLink,
+.PM_ASCriterionGroupCheckbox .PM_ASLabelCheckbox .PM_ASLabelLink:hover {
+    font-weight: bold;
+}
+
+/* Remove checkbox border for IE */
+.PM_ASCriterionCheckbox {
+    border: 0;
+    vertical-align: middle;
+}
+
+/* Hidden criterion */
+.PM_ASCriterionDisable {
+    -khtml-opacity: .50;
+    -moz-opacity: .50;
+    -ms-filter: "alpha(opacity=50)";
+    filter: alpha(opacity=50);
+    opacity: .50;
+    zoom: 1
+}
+
+/* ===== Criterion => level depth ===== */
+.PM_ASLevelDepth {
+    border-top: 1px solid #d6d4d4
+}
+.PM_ASLevelDepth li {
+    position: relative
+}
+.PM_ASLevelDepth li a {
+    font-weight: 700;
+    color: #333;
+    display: block;
+    font-size: 13px;
+    line-height: 30px;
+    padding: 0 30px 0 19px;
+    border-bottom: 1px solid #d6d4d4
+}
+.PM_ASLevelDepth li a:hover {
+    background: #f6f6f6
+}
+.PM_ASLevelDepth li:not(.level1) a {
+    color: #777777;
+    font-weight: normal;
+}
+.PM_ASLevelDepth li:not(.level1) a:before {
+    content: "\f105";
+    font-family: "FontAwesome", "FontAwesomeAS4";
+    line-height: 29px;
+    padding-right: 8px;
+    color: #777777;
+    font-weight: normal;
+}
+.PM_ASLevelDepth li span.grower {
+    display: block;
+    background: #f6f6f6;
+    position: absolute;
+    right: 0;
+    top: 0;
+    cursor: pointer;
+    font-family: "FontAwesome", "FontAwesomeAS4";
+    font-size: 14px
+}
+.PM_ASLevelDepth li span.grower.PM_ASCriterionOpen:before,
+.PM_ASLevelDepth li span.grower.PM_ASCriterionOpenClose:before {
+    content: "\f068";
+    display: block;
+    vertical-align: middle;
+    width: 30px;
+    height: 30px;
+    color: #333;
+    line-height: 30px;
+    text-align: center
+}
+.PM_ASLevelDepth li span.grower.PM_ASCriterionClose:before {
+    content: "\f067";
+    color: silver
+}
+.PM_ASLevelDepth li span.grower.PM_ASCriterionOpen:before {
+    content: "\f068";
+    color: silver
+}
+
+/* Selected class for category tree view */
+.PM_ASLevelDepth .PM_ASCriterionLevelChoosen .PM_ASCriterionLevelChoose {
+    font-weight: bold;
+}
+.PM_ASLevelDepth .PM_ASCriterionLevelSelected.PM_ASCriterionLevelChoosen span + .PM_ASCriterionLevelChoose,
+.PM_ASLevelDepth .PM_ASCriterionLevelSelected.PM_ASCriterionLevelChoosen a.PM_ASCriterionLevelChoose {
+    text-decoration: underline;
+}
+
+/* Link for removing criterion of selection */
+.PM_ASCriterionLevelChoosen a:hover {
+    text-decoration: line-through!important;
+}
+
+/* ===== Selections block display ===== */
+.PM_ASSelectionsBlock {
+    padding-top: 10px;
+}
+.PM_ASSelections ul {
+    list-style-type: none;
+    margin: 0;
+}
+.PM_ASSelections ul li {
+    display: inline-block;
+    padding: 0 5px;
+}
+.PM_ASBlockOutputVertical .PM_ASSelections > ul li {
+    display: block!important;
+}
+.PM_ASBlockOutputVertical .PM_ASSelections ul.PM_ASSelectionsCriterionsGroup > li {
+    padding: 5px 0;
+}
+#PM_ASearchResults .PM_ASSelections ul li {
+    padding: 0 10px;
+}
+.PM_ASBlockOutputHorizontal .PM_ASSelectionsBlock {
+    min-height: 25px;
+}
+* html .PM_ASBlockOutputHorizontal .PM_ASSelectionsBlock {
+    height: 25px;
+}
+.PM_ASSelectionsDropDown {
+    position: relative;
+    height: 25px;
+    z-index: 2;
+}
+.PM_ASSelectionsDropDownMenu {
+    display: none;
+    position: absolute;
+    top: 20px;
+    left: 0;
+    width: 100%;
+    padding: 2%;
+    z-index: 2;
+}
+
+/* Link for showing dropdown selection reminder on vertical block */
+.PM_ASBlockOutputVertical a.PM_ASSelectionsDropDownShowLink {
+    text-decoration: none;
+}
+.PM_ASBlockOutputVertical a.PM_ASSelectionsDropDownShowLink:before {
+    content: "\f107";
+    font-family: "FontAwesome", "FontAwesomeAS4";
+    padding-right: 5px;
+}
+.PM_ASSelectionsResults .PM_ASSelectionsSelectedCriterion {
+    display: inline-block;
+    padding-right: 5px;
+}
+.PM_ASSelectionsResults .PM_ASSelectionsCriterionsGroup .PM_ASSelectionsCriterionsGroupName {
+    display: block;
+}
+.PM_ASSelectionsResults .PM_ASSelectionsCriterionsGroupName strong,
+.PM_ASSelectionsResults .PM_ASSelectionsCriterionsGroupName > ul {
+    display: inline-block;
+}
+
+/* Dropdown selection reminder on vertical block */
+.PM_ASBlockOutputVertical .PM_ASSelectionsDropDownMenu {
+    background: #ffffff;
+    border: 1px dashed #9E9E9E;
+}
+
+/* Link for removing criterion of selection */
+a.PM_ASSelectionsRemoveLink {
+    text-decoration: none;
+}
+a.PM_ASSelectionsRemoveLink:before {
+    content: "\f00d";
+    font-family: "FontAwesome", "FontAwesomeAS4";
+    padding-right: 5px;
+}
+a.PM_ASSelectionsRemoveLink:hover,
+.PM_ASCriterionLinkSelected:hover {
+    text-decoration: line-through!important;
+}
+
+/* ===== SEO pages ===== */
+#PM_ASearchSeoCrossLinks {
+    clear: both;
+}
+
+/* ===== Others ===== */
+.clear {
+    clear: both;
+}
+
+/* Blur */
+.as4-loader-blur {
+    -webkit-filter: blur(2px);
+    -moz-filter: blur(2px);
+    -o-filter: blur(2px);
+    -ms-filter: blur(2px);
+    filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius='2');
+    filter: blur(2px);
+}
+.as4-loader:before,
+.as4-loader:after,
+.as4-loader {
+    border-radius: 50%;
+    width: 2.5em;
+    height: 2.5em;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+    -webkit-animation: as4loader 1.8s infinite ease-in-out;
+    animation: as4loader 1.8s infinite ease-in-out;
+}
+.as4-loader {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 10px;
+    position: relative;
+    text-indent: -9999em;
+    -webkit-animation-delay: 0.16s;
+    animation-delay: 0.16s;
+    opacity: 1;
+}
+.as4-loader:before {
+    left: -3.5em;
+}
+.as4-loader:after {
+    left: 3.5em;
+    -webkit-animation-delay: 0.32s;
+    animation-delay: 0.32s;
+}
+.as4-loader:before,
+.as4-loader:after {
+    content: '';
+    position: absolute;
+    top: 0;
+}
+@keyframes as4loader { 0%, 80%, 100% { box-shadow: 0 2.5em 0 -1.3em #333333; } 40% { box-shadow: 0 2.5em 0 0 #666666; } }@-webkit-keyframes as4loader { 0%, 80%, 100% { box-shadow: 0 2.5em 0 -1.3em #333333; } 40% { box-shadow: 0 2.5em 0 0 #666666; } } 
+/* /Blur */

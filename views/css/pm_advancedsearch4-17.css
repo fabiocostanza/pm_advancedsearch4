@@ -1,0 +1,515 @@
+/* ===== General ===== */
+@font-face {
+    font-family: 'FontAwesomeAS4';
+    src: url('//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/fonts/fontawesome-webfont.eot?v=4.7.0');
+    src: url('//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/fonts/fontawesome-webfont.eot?#iefix&v=4.7.0') format('embedded-opentype'), url('//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/fonts/fontawesome-webfont.woff2?v=4.7.0') format('woff2'), url('//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/fonts/fontawesome-webfont.woff?v=4.7.0') format('woff'), url('//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/fonts/fontawesome-webfont.ttf?v=4.7.0') format('truetype'), url('//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/fonts/fontawesome-webfont.svg?v=4.7.0#fontawesomeregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+.PM_ASearchTitle,
+.PM_ASBlockOutputHorizontal a,
+.PM_ASBlockOutputVertical a {
+    color: #414141;
+}
+.clear { clear: both; }
+.text-center { text-align: center; }
+
+
+/* ===== Reset filters ===== */
+
+.PM_ASResetSearch {
+    display: none;
+    color: inherit;
+    font-size: 0.85rem;
+    text-align: center;
+    padding:  0.25rem;
+    margin: 0.75rem 0 1.25rem;
+}
+.PM_ASBlockOutputVertical .PM_ASResetSearch {
+    border: 1px dashed rgba(0,0,0,.125);
+    box-shadow: 2px 2px 11px 0 rgba(0,0,0,.1);
+}
+.PM_ASResetSearch:before {
+    content: "\f0e2";
+    font-family: "FontAwesome", "FontAwesomeAS4";
+    padding-right: 5px;
+}
+.PM_ASResetGroup {
+    font-size: 10px;
+    margin-top: 5px;
+}
+.PM_ASResetGroup:before {
+    content: "\f00d";
+    font-family: "FontAwesome", "FontAwesomeAS4";
+    padding-right: 5px;
+}
+
+
+/* ===== Vertical Search blocks ===== */
+
+.PM_ASBlockOutputVertical .PM_ASBlockNbProductValue {
+    opacity: 0.6;
+}
+.PM_ASBlockOutputVertical .PM_ASCriterionsGroup {
+    margin-bottom: 1rem;
+}
+.PM_ASBlockOutputVertical .PM_ASCriterionsGroupTitle {
+    border-bottom: 1px solid #d6d4d4;
+    padding-bottom: 0.5rem;
+    margin-top: 1.5rem;
+}
+.PM_ASBlockOutputVertical .PM_ASCriterionsGroup:first-child .PM_ASCriterionsGroupTitle {
+    margin-top: 0;
+}
+.PM_ASBlockOutputVertical .PM_ASCriterionsGroup ul {
+    margin-bottom: 0;
+}
+.PM_ASBlockOutputVertical .PM_ASSubmitSearch {
+    margin-top: 1.5rem;
+}
+
+
+/* ===== Horizontal Search blocks ===== */
+
+.PM_ASBlockOutputHorizontal {
+    clear: both;
+}
+.PM_ASBlockOutputHorizontal .card-header {
+    text-align: center;
+}
+.PM_ASBlockOutputHorizontal .PM_ASCriterionsGroup {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+.PM_ASBlockOutputHorizontal .PM_ASCriterionsGroup select {
+    width: 96%;
+}
+
+
+/* ===== Groups of Criteria ===== */
+
+/* Lists management */
+.PM_ASCriterions ul {
+    list-style: none;
+}
+
+/* Skip group link */
+.PM_ASSkipGroup {
+    font-size: 10px;
+    float: right;
+    margin-top: 5px;
+}
+.PM_ASSkipGroup:after {
+    content: "\f051";
+    font-family: "FontAwesome", "FontAwesomeAS4";
+    padding-left: 5px;
+}
+
+/* Hidden and disabled criteria */
+.PM_ASCriterionDisable {
+    -khtml-opacity: .50;
+    -moz-opacity: .50;
+    -ms-filter: "alpha(opacity=50)";
+    filter: alpha(opacity=50);
+    opacity: .50;
+    zoom: 1
+}
+.PM_ASShowCriterionsGroupHidden:before {
+    font-family: "FontAwesome", "FontAwesomeAS4";
+    padding-right: 5px;
+}
+.PM_ASShowCriterionsGroupHidden:before {
+    content: "\f105";
+}
+.PM_ASShowCriterionsGroupHidden.PM_ASShowCriterionsGroupHiddenOpen:before {
+    content: "\f107";
+}
+.PM_ASShowCriterionsGroupHidden {
+    text-align: center;
+}
+.PM_ASCriterionsGroupHidden {
+    display: none;
+}
+
+/* Range value for slider */
+.PM_ASCritRange {
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+.PM_ASCritRangeValue {
+    display: block;
+    text-align: center;
+    margin-top: 5px;
+}
+
+/* Hide toggle link */
+.PM_ASCriterionHideToggleLink {
+    font-size: 10px;
+    margin-top: 10px;
+    display: block;
+}
+
+/* ===== Criterions ===== */
+ul.PM_ASCriterionGroupImage,
+ul.PM_ASCriterionGroupCheckbox,
+ul.PM_ASCriterionGroupLinkColor,
+ul.PM_ASCriterionGroupLink,
+ul.PM_ASCriterionGroupColor,
+ul.PM_ASLevelDepth {
+    list-style-type: none;
+    padding-left: 0;
+}
+.PM_ASCriterionsSEOGroupDisabled,
+.PM_ASCriterionsSEOGroupDisabled a,
+.PM_ASCriterionsSEOGroupDisabled input {
+    cursor: default;
+}
+
+/* Criterion group display */
+ul.PM_ASCriterionGroupImage,
+.PM_ASCriterionGroupColor {
+    clear: both;
+}
+ul.PM_ASCriterionGroupImage li,
+.PM_ASCriterionGroupColor li {
+    display: inline-block;
+}
+ul.PM_ASCriterionGroupImage li a,
+.PM_ASCriterionGroupColor li a {
+    display: block;
+}
+
+/* Criterion display */
+.PM_ASCriterionHide,
+li.PM_ASCriterionHide {
+    display: none;
+}
+.PM_ASHide {
+    display: none;
+}
+.PM_ASHide:before, .PM_ASShow:before {
+    font-family: "FontAwesome", "FontAwesomeAS4";
+    padding-right: 5px;
+}
+.PM_ASHide:before {
+    content: "\f106";
+}
+.PM_ASShow:before {
+    content: "\f107";
+}
+
+/* Number of results on criterion */
+div.PM_ASCriterionNbProduct {
+    opacity: 0.6;
+    display: inline;
+}
+
+/* Color square size */
+.PM_ASCriterionGroupColor li a {
+    width: 15px;
+    height: 15px;
+}
+.PM_ASCriterionGroupColor.color_to_pick_list li, .PM_ASCriterionGroupLinkColor span.PM_ASCriterionColorSquare {
+    border: 1px solid #D6D4D4;
+    display: inline-block;
+    float: none;
+}
+.PM_ASCriterionGroupColor.color_to_pick_list li a, .PM_ASCriterionGroupLinkColor span.PM_ASCriterionColorSquare {
+    width: 23px;
+    height: 23px;
+    margin: 1px!important;
+    background-size: 100% 100% !important;
+}
+.PM_ASCriterionGroupColor.color_to_pick_list li.PM_ASCriterionHide, ul.PM_ASCriterionGroupImage li.PM_ASCriterionHide {
+    display: none;
+}
+
+/* Selected => image and square color */
+.PM_ASCriterionGroupImage .PM_ASCriterionLink,
+.PM_ASCriterionGroupColor .PM_ASCriterionLink {
+    margin: 4px!important;
+}
+.PM_ASCriterionGroupImage .PM_ASCriterionLinkSelected,
+.PM_ASCriterionGroupColor .PM_ASCriterionLinkSelected {
+    border: 2px solid #999;
+    margin: 2px!important;
+}
+
+/* Selected => link */
+.PM_ASCriterionGroupLink .PM_ASCriterionLinkSelected,
+.PM_ASCriterionGroupLink .PM_ASCriterionLink:hover {
+    font-weight: bold;
+}
+.PM_ASCriterionGroupLink:not(.PM_ASCriterionGroupLinkColor) .PM_ASCriterionLink:before {
+    content: "\f105";
+    font-family: "FontAwesome", "FontAwesomeAS4";
+    padding-right: 5px;
+}
+
+/* Criterion group (color, but not square only) */
+.PM_ASCriterionGroupLinkColor .PM_ASCriterionLink {
+    height: 23px;
+    line-height: 23px;
+    margin-bottom: 3px;
+    display: block;
+}
+.PM_ASCriterionGroupLinkColor .PM_ASCriterionLink .PM_ASCriterionValue {
+    line-height: 23px;
+    display: block;
+}
+.PM_ASCriterionGroupLinkColor span.PM_ASCriterionColorSquare {
+    margin: 0 6px 0 0 !important;
+    display: block;
+    float: left;
+}
+
+/* Selected class for label with link to SEO pages */
+.PM_ASCriterionGroupCheckbox .PM_ASLabelCheckboxSelected .PM_ASLabelLink,
+.PM_ASCriterionGroupCheckbox .PM_ASLabelCheckbox .PM_ASLabelLink:hover {
+    font-weight: bold;
+}
+
+/* Remove checkbox border for IE */
+.PM_ASCriterionCheckbox {
+    border: 0;
+    vertical-align: middle;
+}
+
+
+/* ===== Criterion => level depth ===== */
+
+.PM_ASLevelDepth {
+}
+.PM_ASLevelDepth li {
+    position: relative
+}
+.PM_ASLevelDepth li a {
+    font-weight: 700;
+    display: block;
+    font-weight: 600;
+    line-height: 30px;
+    border-bottom: 2px solid #ebebeb;
+}
+.PM_ASLevelDepth li:not(.level1) a {
+    border-bottom: none;
+}
+.PM_ASLevelDepth li:not(.level1):not(.PM_ASCriterionLevelSelected) a {
+    color: #777777;
+    font-weight: normal;
+    font-size: .875rem;
+}
+.PM_ASLevelDepth li span.grower {
+    display: block;
+    position: absolute;
+    right: 0;
+    top: 0;
+    cursor: pointer;
+}
+.PM_ASLevelDepth li span.grower.PM_ASCriterionClose .add,
+.PM_ASLevelDepth li span.grower.PM_ASCriterionOpen .remove {
+    display:block;
+}
+.PM_ASLevelDepth li span.grower.PM_ASCriterionClose .remove,
+.PM_ASLevelDepth li span.grower.PM_ASCriterionOpen .add {
+    display:none;
+}
+
+/* Selected class for category tree view */
+.PM_ASLevelDepth .PM_ASCriterionLevelChoosen .PM_ASCriterionLevelChoose {
+    font-weight: bold;
+}
+.PM_ASLevelDepth .PM_ASCriterionLevelSelected.PM_ASCriterionLevelChoosen span + .PM_ASCriterionLevelChoose,
+.PM_ASLevelDepth .PM_ASCriterionLevelSelected.PM_ASCriterionLevelChoosen a.PM_ASCriterionLevelChoose {
+    text-decoration: underline;
+}
+
+/* Link for removing criterion of selection */
+.PM_ASCriterionLevelChoosen a:hover {
+    text-decoration: line-through!important;
+}
+
+/* ===== Selections block display ===== */
+.PM_ASSelections {
+    background-color: #f5f5f5;
+    border: 1px solid rgba(0,0,0,.125);
+}
+.PM_ASSelections li {
+    display: inline-block;
+}
+
+.PM_ASBlockOutputVertical .PM_ASSelections {
+    padding: 0;
+    background-color: inherit;
+    border: none;
+}
+.PM_ASBlockOutputVertical .PM_ASSelections .active-filter-title {
+    display: block;
+    margin: 0 0 1.25rem;
+}
+.PM_ASBlockOutputVertical .PM_ASSelections li {
+    display: block!important;
+}
+.PM_ASBlockOutputVertical .PM_ASSelections a.PM_ASSelectionsRemoveLink {
+    display: block!important;
+    margin-right: 0;
+    padding-top: 0.3rem;
+    padding-bottom: 0.3rem;
+}
+
+
+* html .PM_ASBlockOutputHorizontal .PM_ASSelectionsBlock {
+    height: 25px;
+}
+.PM_ASSelectionsDropDown {
+    position: relative;
+    height: 25px;
+    z-index: 2;
+}
+.PM_ASSelectionsDropDownMenu {
+    display: none;
+    position: absolute;
+    top: 20px;
+    left: 0;
+    padding: 0.5rem;
+    z-index: 2;
+}
+
+/* Link for showing dropdown selection reminder on vertical block */
+a.PM_ASSelectionsDropDownShowLink {
+    text-decoration: none;
+}
+a.PM_ASSelectionsDropDownShowLink:before {
+    content: "\f105";
+    font-family: "FontAwesome", "FontAwesomeAS4";
+    padding-right: 5px;
+}
+a.PM_ASSelectionsDropDownShowLink.PM_ASSelectionsBlockOpened:before {
+    content: "\f107";
+}
+.PM_ASSelectionsResults .PM_ASSelectionsSelectedCriterion {
+    display: inline-block;
+    padding-right: 5px;
+}
+.PM_ASSelectionsResults .PM_ASSelectionsCriterionsGroup .PM_ASSelectionsCriterionsGroupName {
+    display: block;
+}
+.PM_ASSelectionsResults .PM_ASSelectionsCriterionsGroupName strong,
+.PM_ASSelectionsResults .PM_ASSelectionsCriterionsGroupName > ul {
+    display: inline-block;
+}
+
+/* Dropdown selection reminder on vertical block */
+.PM_ASBlockOutputVertical .PM_ASSelectionsDropDownMenu {
+    width: 100%;
+}
+
+/* Link for removing criterion of selection */
+a.PM_ASSelectionsRemoveLink:hover {
+    text-decoration: line-through !important;
+    color: inherit !important;
+}
+a.PM_ASSelectionsRemoveLink:before {
+    content: "\f00d";
+    font-family: "FontAwesome", "FontAwesomeAS4";
+    padding-right: 5px;
+}
+
+/* ===== SEO pages ===== */
+#PM_ASearchSeoCrossLinks {
+    clear: both;
+}
+
+/* Collapse mode for mobiles */
+.PM_ASBlockOutput.PM_ASMobileMode .PM_ASBlockTitle:after,
+.PM_ASBlockOutput.PM_ASMobileMode .PM_ASearchTitle:after {
+    content: "";
+    font-family: "Material Icons";
+    padding-right: 5px;
+    font-size: 24px;
+    font-weight: 400;
+    position: absolute;
+    right: 0;
+}
+.PM_ASBlockOutput.PM_ASMobileMode .card-block {
+    display: none;
+}
+.PM_ASBlockOutput.PM_ASMobileMode .card-header {
+    cursor: pointer;
+}
+.PM_ASBlockOutput.PM_ASMobileMode.PM_ASMobileVisible .PM_ASBlockTitle:after,
+.PM_ASBlockOutput.PM_ASMobileMode.PM_ASMobileVisible .PM_ASearchTitle:after {
+    content: "";
+}
+.PM_ASBlockOutput.PM_ASMobileMode.PM_ASMobileVisible .card-block {
+    display: block;
+}
+
+/* Blur */
+.as4-loader-blur {
+    -webkit-filter: blur(2px);
+    -moz-filter: blur(2px);
+    -o-filter: blur(2px);
+    -ms-filter: blur(2px);
+    filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius='2');
+    filter: blur(2px);
+}
+.as4-loader:before,
+.as4-loader:after,
+.as4-loader {
+    border-radius: 50%;
+    width: 2.5em;
+    height: 2.5em;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+    -webkit-animation: as4loader 1.8s infinite ease-in-out;
+    animation: as4loader 1.8s infinite ease-in-out;
+}
+.as4-loader {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 10px;
+    position: relative;
+    text-indent: -9999em;
+    -webkit-animation-delay: 0.16s;
+    animation-delay: 0.16s;
+    opacity: 1;
+}
+.as4-loader:before {
+    left: -3.5em;
+}
+.as4-loader:after {
+    left: 3.5em;
+    -webkit-animation-delay: 0.32s;
+    animation-delay: 0.32s;
+}
+.as4-loader:before,
+.as4-loader:after {
+    content: '';
+    position: absolute;
+    top: 0;
+}
+@keyframes as4loader { 0%, 80%, 100% { box-shadow: 0 2.5em 0 -1.3em #333333; } 40% { box-shadow: 0 2.5em 0 0 #666666; } }@-webkit-keyframes as4loader { 0%, 80%, 100% { box-shadow: 0 2.5em 0 -1.3em #333333; } 40% { box-shadow: 0 2.5em 0 0 #666666; } } 
+/* /Blur */
+
+/* Scrollbar and overflow management for webkit */
+.PM_ASCriterionsGroupOuter::-webkit-scrollbar {
+    width: 5px;
+}
+.PM_ASCriterionsGroupOuter::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+.PM_ASCriterionsGroupOuter::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: rgba(0,0,0,0.4); 
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+}
+.PM_ASCriterionsGroupOuter::-webkit-scrollbar-thumb:window-inactive {
+    background: rgba(0,0,0,0.2); 
+}
+.PM_ASBlockOutput {
+    position: relative;
+}
