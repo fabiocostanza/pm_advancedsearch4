@@ -53,19 +53,36 @@ class pm_advancedsearch4advancedsearch4ModuleFrontController extends AdvancedSea
         }
         $this->idSearch = (int)Tools::getValue('id_search');
         $this->searchInstance = new AdvancedSearchClass((int)$this->idSearch, (int)$this->context->language->id);
+        if (!Validate::isLoadedObject($this->searchInstance)) {
+            Tools::redirect('404');
+        }
+        if (!$this->searchInstance->active) {
+            if (!headers_sent()) {
+                header("Status: 307 Temporary Redirect", false, 307);
+            }
+            Tools::redirect('index');
+        }
         parent::init();
         $this->setSEOTags();
         $this->setCriterions();
         $this->setProductFilterList();
         $this->processActions();
-        $this->doProductSearch('');
+        if (empty($this->ajax)) {
+            Tools::redirect($this->getCanonicalURL());
+            die;
+        } else {
+            if (!headers_sent()) {
+                header('Link: <' . $this->getCanonicalURL() . '>; rel="canonical"', true);
+            }
+            $this->doProductSearch('');
+        }
     }
     private function setProductFilterList()
     {
         $productFilterListSource = Tools::getValue('productFilterListSource');
         if (in_array($productFilterListSource, As4SearchEngine::$validPageName)) {
             As4SearchEngine::$productFilterListSource = $productFilterListSource;
-            if ($productFilterListSource == 'search' || $productFilterListSource == 'jolisearch' || $productFilterListSource == 'module-ambjolisearch-jolisearch') {
+            if ($productFilterListSource == 'search' || $productFilterListSource == 'jolisearch' || $productFilterListSource == 'module-ambjolisearch-jolisearch' || $productFilterListSource == 'prestasearch') {
                 $productFilterListData = AdvancedSearchCoreClass::getDataUnserialized(Tools::getValue('productFilterListData'));
                 if ($productFilterListData !== false) {
                     As4SearchEngine::$productFilterListData = $productFilterListData;
@@ -87,9 +104,13 @@ class pm_advancedsearch4advancedsearch4ModuleFrontController extends AdvancedSea
             ));
         } elseif (Tools::getValue('only_products')) {
             if ($this->idSeo && (Tools::getValue('p') || Tools::getValue('n'))) {
-                header('X-Robots-Tag: noindex, follow', true);
+                if (!headers_sent()) {
+                    header('X-Robots-Tag: noindex, follow', true);
+                }
             } else {
-                header('X-Robots-Tag: noindex, nofollow', true);
+                if (!headers_sent()) {
+                    header('X-Robots-Tag: noindex, nofollow', true);
+                }
             }
             $this->context->smarty->assign(array(
                 'nofollow' => true,

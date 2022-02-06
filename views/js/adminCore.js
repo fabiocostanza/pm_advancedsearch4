@@ -210,11 +210,9 @@ var dialogIframe;
 function openDialogIframe(url,dialogWidth,dialogHeight,fitScreenHeight) {
     $('body').css('overflow','hidden');
     dialogIframe = $('<iframe class="dialogIFrame" frameborder="0" marginheight="0" marginwidth="0" src="'+url+'"></iframe>').dialog({
-        bgiframe: true,
         modal: true,
         width:dialogWidth,
-        height:dialogHeight,
-        fitHeight:(typeof(fitScreenHeight)!='undefined' && fitScreenHeight ? true:false),
+        height: (fitScreenHeight ? (document.body.offsetHeight - 50) : dialogHeight),
         close: function(event, ui) {$('body').css('overflow','');},
         open: function (event,ui) {$(this).css('width','97%');}
     });
@@ -311,6 +309,11 @@ $.fn.extend({
                 event.preventDefault();
                 return false;
             }
+        }
+        // Handle the case of the Reindex button, which has an empty href, but has a custom button click event handler
+        // to trigger the proper logic anyway
+        if ($(this).attr('href') == '') {
+            return false;
         }
         $.ajax( {
             type : "GET",

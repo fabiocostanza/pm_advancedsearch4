@@ -226,7 +226,7 @@ var as4Plugin = {
 
         if (searchResultsSelector != '' && (searchResultsSelector == '#as_home_content_results' || insertInCenterColumn == 1)) {
             if (searchResultsSelector == '#as_custom_content_results' && keepCategoryInformation) {
-                $('#PM_ASBlockOutput_' + id_search).parent('div').find('*:not(#PM_ASBlockOutput_' + id_search + ', #PM_ASBlockOutput_' + id_search + ' *, ' + searchResultsSelector + ', .content_scene_cat, .page-heading)').remove();
+                $('#PM_ASBlockOutput_' + id_search).parent('div').find('*:not(#PM_ASBlockOutput_' + id_search + ', #PM_ASBlockOutput_' + id_search + ' *, ' + searchResultsSelector + ', .content_scene_cat, .content_scene_cat *, .page-heading, .page-heading *, .PM_KeepBlock, .PM_KeepBlock *)').remove();
             } else {
                 $('#PM_ASBlockOutput_' + id_search).parent('div').find('*:not(#PM_ASBlockOutput_' + id_search + ', #PM_ASBlockOutput_' + id_search + ' *, ' + searchResultsSelector + ')').remove();
             }
@@ -584,7 +584,7 @@ var as4Plugin = {
             // Pagination change
             var finalDestUrl = ASSearchUrl;
             var destUrl = as4Plugin.getAsAjaxUrl($(this).attr('href'));
-            var asExtraParamsReg = new RegExp("&p=[0-9]+|&orderby=[a-z]+|&orderway=[a-z]+|&n=[0-9]+|\\?p=[0-9]+|\\?orderby=[a-z]+|\\?orderway=[a-z]+|\\?n=[0-9]+", "g");
+            var asExtraParamsReg = new RegExp("&p=[0-9]+|&orderby=[a-z_]+|&orderway=[a-z]+|&n=[0-9]+|\\?p=[0-9]+|\\?orderby=[a-z_]+|\\?orderway=[a-z]+|\\?n=[0-9]+", "g");
             var nextExtraParams = destUrl.match(asExtraParamsReg);
             finalDestUrl = as4Plugin.cleanAjaxDuplicateParams(finalDestUrl, (as4Plugin.getFormSerialized(id_search) + '&only_products=1&ajaxMode=1'));
 
@@ -650,7 +650,7 @@ var as4Plugin = {
                 var destUrl = destBaseUrl + ((destBaseUrl.indexOf('?') < 0) ? '?' : '&') + 'orderby=' + splitData[0] + '&orderway=' + splitData[1];
             }
             // Set order by for next search
-            var regOrderBy = new RegExp("&orderby=[a-z]+|\\?orderby=[a-z]+", "g");
+            var regOrderBy = new RegExp("&orderby=[a-z_]+|\\?orderby=[a-z_]+", "g");
             var orderby = regOrderBy.exec(destUrl);
             if (orderby) {
                 orderby = orderby.toString().substring(9);
@@ -663,7 +663,7 @@ var as4Plugin = {
                 orderway = orderway.toString().substring(10);
                 $('#PM_ASBlockOutput_' + id_search + ' input[name=orderway]').val(orderway).attr('disabled', '').removeAttr('disabled');
             }
-            var asExtraParamsReg = new RegExp("&orderby=[a-z]+|&orderway=[a-z]+|&n=[0-9]+|\\?orderby=[a-z]+|\\?orderway=[a-z]+|\\?n=[0-9]+", "g");
+            var asExtraParamsReg = new RegExp("&orderby=[a-z_]+|&orderway=[a-z]+|&n=[0-9]+|\\?orderby=[a-z_]+|\\?orderway=[a-z]+|\\?n=[0-9]+", "g");
             var nextExtraParams = destUrl.match(asExtraParamsReg);
             finalDestUrl = as4Plugin.cleanAjaxDuplicateParams(finalDestUrl, (as4Plugin.getFormSerialized(id_search) + '&only_products=1&ajaxMode=1'));
 
@@ -731,7 +731,7 @@ var as4Plugin = {
 
             var id_search = as4Plugin.getIdSearchFromItem(this);
 
-            var asExtraParamsReg = new RegExp("&orderby=[a-z]+|&orderway=[a-z]+|\\?orderby=[a-z]+|\\?orderway=[a-z]+", "g");
+            var asExtraParamsReg = new RegExp("&orderby=[a-z_]+|&orderway=[a-z]+|\\?orderby=[a-z_]+|\\?orderway=[a-z]+", "g");
             var asSerializeDatas = as4Plugin.getFormSerialized(id_search);
             var asMatchIdSearchReg = new RegExp("id_search", "g");
 

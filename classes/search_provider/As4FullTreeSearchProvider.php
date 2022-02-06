@@ -48,7 +48,7 @@ class As4FullTreeSearchProvider implements ProductSearchProviderInterface
             if (version_compare($pm_productsbyattributes->version, '1.0.4', '>=')) {
                 $continue = false;
                 $productCount = $pm_productsbyattributes->getCategoryProducts((int)$realContext->controller->getCategory()->id_category, null, null, null, $query->getSortOrder()->toLegacyOrderBy(), $query->getSortOrder()->toLegacyOrderWay(), true, true);
-                $productList = $pm_productsbyattributes->getCategoryProducts((int)$realContext->controller->getCategory()->id_category, (int)$context->getIdLang(), (int)$query->getResultsPerPage(), (int)$query->getPage(), $query->getSortOrder()->toLegacyOrderBy(), $query->getSortOrder()->toLegacyOrderWay(), false, true);
+                $productList = $pm_productsbyattributes->getCategoryProducts((int)$realContext->controller->getCategory()->id_category, (int)$context->getIdLang(), (int)$query->getPage(), (int)$query->getResultsPerPage(), $query->getSortOrder()->toLegacyOrderBy(), $query->getSortOrder()->toLegacyOrderWay(), false, true);
                 $result->setTotalProductsCount($productCount);
                 $result->setProducts($productList);
                 $pm_productsbyattributes->splitProductsList($productList);

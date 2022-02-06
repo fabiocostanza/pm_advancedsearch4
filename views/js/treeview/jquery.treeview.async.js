@@ -17,7 +17,7 @@
 
 function load(settings, root, child, container) {
 	root = formatCategoryIdTreeView(root);
-		
+
 	function createNode(parent) {
 		var id_category = this.id_category;
 		var checked = false;
@@ -28,7 +28,16 @@ function load(settings, root, child, container) {
 				$(this).remove();
 			}
 		});
-		var current = $("<li/>").addClass(settings.inputNameSelector).attr("id", (this.id_category + '-' + settings.inputNameSelector) || "").html(" <input type=\""+(!settings.use_radio ? 'checkbox' : 'radio')+"\" value=\""+this.id_category+"\"/ name=\""+settings.inputNameValue+"\" "+(checked ? 'checked' : '')+" onclick=\"clickOnCategoryBox($(this), '"+ settings.inputNameValue +"');\"/> <span class=\"category_label\">" + this.name +"</span>"+(this.has_children>0 && !settings.use_radio?" <input type=\"checkbox\" class=\"check_all_children\" onclick=\"checkChildrenCategory(this,"+this.id_category+", '"+ settings.inputNameValue +"')\"  /> <small>" + settings.checkAllChildrenLabel + "</small> ":'')+" <span class=\"category_level\" style=\"display: none;\">" + this.level_depth +"</span> <span class=\"nb_sub_cat_selected\" style=\"font-weight: bold;"+(this.nbSelectedSubCat == 0 ? 'display: none;' : '')+"\">(<span class=\"nb_sub_cat_selected_value\">"+this.nbSelectedSubCat+"</span> "+settings.selectedLabel+")</span>").appendTo(parent);
+		var categoryHtmlItem = " <input type=\"" + (!settings.use_radio ? 'checkbox' : 'radio') + "\" value=\"" + this.id_category + "\"/ name=\"" + settings.inputNameValue + "\" " + (checked ? 'checked' : '') + " onclick=\"clickOnCategoryBox($(this), '" + settings.inputNameValue + "');\"/>";
+		categoryHtmlItem += " <span class=\"category_label\">" + this.name + "</span>";
+		categoryHtmlItem += (this.has_children > 0 && !settings.use_radio ? " <input type=\"checkbox\" class=\"check_all_children\" onclick=\"checkChildrenCategory(this," + this.id_category + ", '" + settings.inputNameValue + "')\"  /> <small>" + settings.checkAllChildrenLabel + "</small> " : '');
+		categoryHtmlItem += " <span class=\"category_level\" style=\"display: none;\">" + this.level_depth + "</span>";
+		categoryHtmlItem += " <span class=\"nb_sub_cat_selected\" style=\"font-weight: bold;" + (this.nbSelectedSubCat == 0 ? 'display: none;' : '') + "\">(<span class=\"nb_sub_cat_selected_value\">" + this.nbSelectedSubCat + "</span> " + settings.selectedLabel + ")</span>";
+		var current = $("<li/>")
+			.addClass(settings.inputNameSelector)
+			.attr("id", (this.id_category + '-' + settings.inputNameSelector) || "")
+			.html(categoryHtmlItem)
+			.appendTo(parent);
 		if (this.classes) {
 			current.children("span").addClass(this.classes);
 		}
@@ -38,7 +47,8 @@ function load(settings, root, child, container) {
 			createNode.call({
 				classes: "placeholder",
 				name: "&nbsp;",
-				children:[]
+				children:[],
+				nbSelectedSubCat: 0
 			}, branch);
 			branch.children().children('.nb_sub_cat_selected').remove();
 		}
@@ -51,12 +61,14 @@ function load(settings, root, child, container) {
 		},
 		success: function(response) {
 			child.empty();
-			$.each(response, createNode, [child]);
-	        $(container).treeview({
-	        	add: child
-	        });
+			$.each(response, function(index, value) {
+				createNode.call(value, child);
+			});
+			$(container).treeview({
+				add: child
+			});
 			treeViewSetting[settings.inputNameValue]['readyToExpand'] = true;
-	    }
+		}
 	}, settings.ajax));
 }
 

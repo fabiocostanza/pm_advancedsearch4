@@ -24,9 +24,9 @@ function loadTreeView(inputName, categoryRootId, selectedCategories, selectedLab
 	treeViewSetting[inputName]['use_radio'] = use_radio;
 	treeViewSetting[inputName]['selector'] = '#categories-treeview-'+inputName;
 	treeViewSetting[inputName]['selector'] = treeViewSetting[inputName]['selector'].replace('[', '').replace(']', '');
-	
+
 	treeViewSetting[inputName]['inputNameSelector'] = inputName.replace('[', '').replace(']', '');
-	
+
 	$(document).ready(function() {
 		$(treeViewSetting[inputName]['selector']).treeview({
 			inputNameValue: inputName,
@@ -49,7 +49,7 @@ function loadTreeView(inputName, categoryRootId, selectedCategories, selectedLab
 		$(treeViewSetting[inputName]['selector'] + ' li#'+categoryRootId+'-'+treeViewSetting[inputName]['inputNameSelector']).
 			removeClass('collapsable lastCollapsable').
 			addClass('last static');
-		
+
 		$('#expand_all-'+treeViewSetting[inputName]['inputNameSelector']).click( function () {
 			if ($(this).attr('rel') != '') treeViewSetting[inputName]['categoryBoxName'] = $(this).attr('rel');
 			expandAllCategories(inputName);
@@ -78,7 +78,7 @@ function loadTreeView(inputName, categoryRootId, selectedCategories, selectedLab
 	});
 }
 
-function callbackToggle(element, inputName) {	
+function callbackToggle(element, inputName) {
 	if (!element.is('.expandable'))
 		return false;
 
@@ -130,7 +130,7 @@ function needExpandAllCategories(inputName) {
 function expandAllCategories(inputName) {
 	// if no category to expand, no action
 	if (!needExpandAllCategories(inputName)) return;
-	
+
 	// force to open main category
 	if ($('li#'+treeViewSetting[inputName]['categoryRootId']+'-'+treeViewSetting[inputName]['inputNameSelector']).is('.expandable'))
 		$('li#'+treeViewSetting[inputName]['categoryRootId']+'-'+treeViewSetting[inputName]['inputNameSelector']).children('span.folder').trigger('click');
@@ -175,42 +175,44 @@ function collapseAllCategories(inputName) {
 }
 
 function checkAllCategories(inputName) {
+	$('input.check_all_children', $(treeViewSetting[inputName]['selector'])).prop('checked', true);
+
 	if (needExpandAllCategories(inputName)) {
 		expandAllCategories(inputName);
 	} else {
 		$('input[name="'+treeViewSetting[inputName]['categoryBoxName']+'"]').not(':checked').each(function () {
-			$(this).attr('checked', 'checked');
+			$(this).prop('checked', true);
 			clickOnCategoryBox($(this), inputName);
 		});
 	}
 }
 
 function uncheckAllCategories(inputName) {
+	$('input.check_all_children', $(treeViewSetting[inputName]['selector'])).prop('checked', false);
+
 	if (needExpandAllCategories(inputName))
 		expandAllCategories(inputName);
 	else
 	{
 		$('input[name="'+treeViewSetting[inputName]['categoryBoxName']+'"]:checked').each(function () {
-			$(this).removeAttr('checked');
+			$(this).prop('checked', false);
 			clickOnCategoryBox($(this), inputName);
 		});
 	}
 }
 
-function clickOnCategoryBox(category, inputName) {	
+function clickOnCategoryBox(category, inputName) {
 	if (category.is(':checked')) {
 		$('select#id_category_default').append('<option value="'+category.val()+'">'+(category.val() != treeViewSetting[inputName]['categoryRootId'] ? category.parent().find('span').html() : treeViewSetting[inputName]['home'])+'</option>');
-		updateNbSubCategorySelected(category, true, inputName);
+		updateNbSubCategorySelected(category, inputName);
 		if ($('select#id_category_default option').length > 0)
 		{
 			$('select#id_category_default').show();
 			$('#no_default_category').hide();
 		}
-	}
-	else
-	{
+	} else {
 		$('select#id_category_default option[value='+category.val()+']').remove();
-		updateNbSubCategorySelected(category, false, inputName);
+		updateNbSubCategorySelected(category, inputName);
 		if ($('select#id_category_default option').length == 0)
 		{
 			$('select#id_category_default').hide();
@@ -219,41 +221,47 @@ function clickOnCategoryBox(category, inputName) {
 	}
 }
 
-function updateNbSubCategorySelected(category, add, inputName) {
+function updateNbSubCategorySelected(category, inputName) {
 	var currentSpan = category.parent().parent().parent().children('.nb_sub_cat_selected');
-	var parentNbSubCategorySelected = currentSpan.children('.nb_sub_cat_selected_value').html();
+	var currentUl = category.parent().parent().parent().children('ul');
+	var nbCurrentSelectedItems = currentUl.children('li').children('input:not([value="undefined"]):not(.check_all_children):checked').size();
 
 	if (treeViewSetting[inputName]['use_radio']) {
 		$('.nb_sub_cat_selected').hide();
 		return false;
 	}
 
-	if (add)
-		var newValue = parseInt(parentNbSubCategorySelected)+1;
-	else
-		var newValue = parseInt(parentNbSubCategorySelected)-1;
-
-	currentSpan.children('.nb_sub_cat_selected_value').html(newValue);
+	currentSpan.children('.nb_sub_cat_selected_value').html(nbCurrentSelectedItems);
 	currentSpan.children('.nb_sub_cat_selected_word').html(treeViewSetting[inputName]['selectedLabel']);
 
-	if (newValue == 0)
+	if (nbCurrentSelectedItems == 0) {
 		currentSpan.hide();
-	else
+	} else {
 		currentSpan.show();
+	}
 
-	if (currentSpan.parent().children('.nb_sub_cat_selected').length != 0)
-		updateNbSubCategorySelected(currentSpan.parent().children('input'), add, inputName);
+	if (currentSpan.parent().children('.nb_sub_cat_selected').length != 0) {
+		updateNbSubCategorySelected(currentSpan.parent().children('input'), inputName);
+	}
 }
 function checkChildrenCategory(e, id_category, inputName) {
-	if($(e).attr('checked')) {
+	if($(e).is(':checked')) {
 		$('li#'+id_category+'-'+treeViewSetting[inputName]['inputNameSelector']+'.expandable:visible span.category_label').trigger('click');
 		treeViewSetting[inputName]['interval'] = setInterval(function() {
 			if($(e).parent('li').children('ul').children('li').children('input:not([value="undefined"]):not(.check_all_children)').length) {
-				$(e).parent('li').children('ul').children('li').children('input:not(.check_all_children)').attr('checked','checked');
+				categories = $(e).parent('li').children('ul').children('li').children('input:not(.check_all_children)');
+				categories.prop('checked', true);
+				categories.each(function(index, category) {
+					updateNbSubCategorySelected($(category), inputName);
+				});
 				clearInterval(treeViewSetting[inputName]['interval']);
 			}
 		}, 200);
-	}else {
-		$(e).parent('li').children('ul').children('li').children('input:not(.check_all_children)').attr('checked','');
+	} else {
+		categories = $(e).parent('li').children('ul').children('li').children('input:not(.check_all_children)');
+		categories.prop('checked', false);
+		categories.each(function (index, category) {
+			updateNbSubCategorySelected($(category), inputName);
+		});
 	}
 }

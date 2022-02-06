@@ -31,6 +31,9 @@ class pm_advancedsearch4seoModuleFrontController extends ModuleFrontController
         $this->setSEOTags();
         $this->setProductFilterList();
         $this->setSmartyVars();
+        if (!headers_sent()) {
+            header('Link: <' . $this->getCanonicalURL() . '>; rel="canonical"', true);
+        }
         if (version_compare(_PS_VERSION_, '1.7.0.0', '<')) {
             $this->setTemplate('seo-page.tpl');
         } else {
@@ -63,7 +66,7 @@ class pm_advancedsearch4seoModuleFrontController extends ModuleFrontController
     protected function setSEOTags()
     {
         $this->idSeo = Tools::getValue('id_seo');
-        $this->seoUrl = Tools::getValue('seo_url');
+        $this->seoUrl = strip_tags(Tools::getValue('seo_url'));
         $this->pageNb = (int)Tools::getValue('p', 1);
         if ($this->seoUrl && $this->idSeo) {
             $resultSeoUrl = AdvancedSearchSeoClass::getSeoSearchByIdSeo((int)$this->idSeo, (int)$this->context->language->id);
@@ -72,17 +75,26 @@ class pm_advancedsearch4seoModuleFrontController extends ModuleFrontController
             }
             $this->idSearch = (int)$resultSeoUrl[0]['id_search'];
             $this->searchInstance = new AdvancedSearchClass((int)$this->idSearch, (int)$this->context->language->id);
+            if (!Validate::isLoadedObject($this->searchInstance)) {
+                Tools::redirect('404');
+            }
             if ($resultSeoUrl[0]['deleted']) {
-                header("Status: 301 Moved Permanently", false, 301);
+                if (!headers_sent()) {
+                    header("Status: 301 Moved Permanently", false, 301);
+                }
                 Tools::redirect('index');
             }
             if (!$this->searchInstance->active) {
-                header("Status: 307 Temporary Redirect", false, 307);
+                if (!headers_sent()) {
+                    header("Status: 307 Temporary Redirect", false, 307);
+                }
                 Tools::redirect('index');
             }
             $seoUrlCheck = current(explode('/', $this->seoUrl));
             if ($resultSeoUrl[0]['seo_url'] != $seoUrlCheck) {
-                header("Status: 301 Moved Permanently", false, 301);
+                if (!headers_sent()) {
+                    header("Status: 301 Moved Permanently", false, 301);
+                }
                 $this->redirectToSeoPageIndex();
                 die();
             }
@@ -100,7 +112,9 @@ class pm_advancedsearch4seoModuleFrontController extends ModuleFrontController
             }
             if ($hasPriceCriterionGroup && $resultSeoUrl[0]['id_currency'] && $this->context->cookie->id_currency != (int)$resultSeoUrl[0]['id_currency']) {
                 $this->context->cookie->id_currency = $resultSeoUrl[0]['id_currency'];
-                header('Refresh: 1; URL='.$_SERVER['REQUEST_URI']);
+                if (!headers_sent()) {
+                    header('Refresh: 1; URL='.$_SERVER['REQUEST_URI']);
+                }
                 die;
             }
             $criteria = unserialize($resultSeoUrl[0]['criteria']);
@@ -209,5 +223,9 @@ class pm_advancedsearch4seoModuleFrontController extends ModuleFrontController
     public function getOriginalCriterions()
     {
         return $this->originalCriterions;
+    }
+    public function getCanonicalURL()
+    {
+        return As4SearchEngine::generateURLFromCriterions($this->idSearch, $this->getSelectedCriterions());
     }
 }

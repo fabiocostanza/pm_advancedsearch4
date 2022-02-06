@@ -21,7 +21,7 @@
 					{/foreach}
 				{/if}
 			{/capture}
-			{if !(isset($as_criteria_group_type_interal_name[$criterions_group.display_type]) && ($as_criteria_group_type_interal_name[$criterions_group.display_type] == 'slider' || $as_criteria_group_type_interal_name[$criterions_group.display_type] == 'range') && isset($as_search.criterions[$criterions_group.id_criterion_group]) && isset($as_search.criterions[$criterions_group.id_criterion_group][0]) && ((isset($as_search.criterions[$criterions_group.id_criterion_group][0].cur_min) && isset($as_search.criterions[$criterions_group.id_criterion_group][0].cur_max) && $as_search.criterions[$criterions_group.id_criterion_group][0].cur_min == 0 && $as_search.criterions[$criterions_group.id_criterion_group][0].cur_max == 0) || (isset($as_search.criterions[$criterions_group.id_criterion_group][0].min) && isset($as_search.criterions[$criterions_group.id_criterion_group][0].max) && $as_search.criterions[$criterions_group.id_criterion_group][0].min == 0 && $as_search.criterions[$criterions_group.id_criterion_group][0].max == 0))) && ($criterions_group.visible && $as_search.hide_empty_crit_group && isset($as_search.criterions[$criterions_group.id_criterion_group]) && sizeof($as_search.criterions[$criterions_group.id_criterion_group])) || ($criterions_group.visible && !$as_search.hide_empty_crit_group) || ($criterions_group.visible && $as_search.step_search)}
+			{if !empty($criterions_group.display_group)}
 				{if $criterions_group.hidden eq '1' && !isset($hidden_criteria_group_open)}
 					{assign var='hidden_criteria_group_open' value=true}
 					<p class="PM_ASShowCriterionsGroupHidden{if isset($as_search.advanced_search_open) && $as_search.advanced_search_open} PM_ASShowCriterionsGroupHiddenOpen{/if}"><a href="#">{l s='Show/hide more options' mod='pm_advancedsearch4'}</a></p>
@@ -59,7 +59,7 @@
 		{if $as_search.search_method == 2}
 			<input type="submit" value="{l s='Search' mod='pm_advancedsearch4'}" name="submitAsearch" class="btn btn-default PM_ASSubmitSearch" />
 		{/if}
-		
+
 		{if isset($smarty.get.id_seo)}
 		<input type="hidden" name="id_seo" value="{$smarty.get.id_seo|intval}" />
 		{/if}
@@ -108,7 +108,7 @@
 			{/if}
 			as4Plugin.params[{$as_search.id_search|intval}].addBestSalesOption = true;
 		{/if}
-		
+
 			as4Plugin.initSearchBlock({$as_search.id_search|intval},{$as_search.search_method|intval},{$as_search.step_search|intval});
 
 			as4Plugin.initSearchEngine();

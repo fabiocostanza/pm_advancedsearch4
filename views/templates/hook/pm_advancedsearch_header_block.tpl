@@ -4,7 +4,7 @@
 {/if}
 {if $hookName eq 'leftcolumn' || $hookName eq 'rightcolumn'}
 	{if empty($ajaxMode)}
-		<div id="PM_ASBlockOutput_{$as_search.id_search|intval}" class="PM_ASBlockOutput PM_ASBlockOutputVertical block"{if isset($as_search.criterions) && is_array($as_search.criterions) && !sizeof($as_search.criterions)} style="display:none"{/if} data-id-search="{$as_search.id_search|intval}">
+		<div id="PM_ASBlockOutput_{$as_search.id_search|intval}" class="PM_ASBlockOutput PM_ASBlockOutputVertical block"{if empty($as_search.criterions)} style="display:none"{/if} data-id-search="{$as_search.id_search|intval}">
 	{/if}
 	<div id="PM_ASBlock_{$as_search.id_search|intval}">
 		{if $searchEngineTitle}
@@ -20,7 +20,7 @@
 		<div class="block_content">
 {else}
 	{if empty($ajaxMode)}
-		<div id="PM_ASBlockOutput_{$as_search.id_search|intval}" class="PM_ASBlockOutput PM_ASBlockOutputHorizontal {$as_search.css_classes|escape:'htmlall':'UTF-8'}"{if isset($as_search.criterions) && is_array($as_search.criterions) && !sizeof($as_search.criterions)} style="display:none"{/if} data-id-search="{$as_search.id_search|intval}">
+		<div id="PM_ASBlockOutput_{$as_search.id_search|intval}" class="PM_ASBlockOutput PM_ASBlockOutputHorizontal {$as_search.css_classes|escape:'htmlall':'UTF-8'}"{if empty($as_search.criterions)} style="display:none"{/if} data-id-search="{$as_search.id_search|intval}">
 	{/if}
 	<div id="PM_ASBlock_{$as_search.id_search|intval}">
 		{if $searchEngineTitle}

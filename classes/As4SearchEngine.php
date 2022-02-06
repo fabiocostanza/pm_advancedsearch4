@@ -25,7 +25,7 @@ abstract class As4SearchEngine
     public static $valid_hooks_product = array('displaytop','displaynavfullwidth','displayrightcolumn','displayleftcolumn', -1);
     public static $valid_hooks_special_page = array('displaytop','displaynavfullwidth','displayrightcolumn','displayleftcolumn', -1);
     public static $valid_hooks_category = array('displaytop','displaynavfullwidth','displayrightcolumn','displayleftcolumn', -1);
-    public static $validPageName = array('best-sales','new-products','prices-drop', 'search', 'index', 'jolisearch', 'module-ambjolisearch-jolisearch');
+    public static $validPageName = array('best-sales','new-products','prices-drop', 'search', 'index', 'jolisearch', 'module-ambjolisearch-jolisearch', 'prestasearch');
     public static $productFilterListData = false;
     public static $productFilterListSource = false;
     public static $productFilterListQuery = false;
@@ -616,7 +616,6 @@ abstract class As4SearchEngine
             ps.id_shop IN ('.implode(', ', array_map('intval', Shop::getContextListShopID())).')
             AND ps.`id_product` = acp.`id_product`
         )';
-
         $join_criterion_tables[] = 'ps';
         $join_criterion_tables[] = 'p';
         if (AdvancedSearchCoreClass::_isFilledArray($selected_criterion)) {
@@ -1054,15 +1053,23 @@ abstract class As4SearchEngine
             $leftJoinWhereCriterion['whereUnion'][] = 'ac.`visible` = 1';
         }
         $countColumn = (AdvancedSearchCoreClass::_isFilledArray($leftJoinWhereCriterion['count']) ? 'COUNT(DISTINCT '.implode(' + ', $leftJoinWhereCriterion['count']).')':'COUNT(DISTINCT acpc.`id_cache_product`)');
-        if ($groupInfos['criterion_group_type'] == 'attribute' && self::isSPAModuleActive() && version_compare(self::getSPAModuleInstance()->version, '2.0.0', '>=') && in_array($groupInfos['id_criterion_group_linked'], self::getSPAModuleInstance()->getSplittedGroups())) {
-            if (empty($leftJoinWhereCriterion['lastAttributeCombinationTableId'])) {
-                $leftJoinWhereCriterion['join'][] = 'JOIN `'._DB_PREFIX_.'pm_spa_cache` spa_cache ON (acp.`id_product` = spa_cache.`id_product` AND spa_cache.`id_shop` = ' . (int)Context::getContext()->shop->id . ')';
+        if (self::isSPAModuleActive() && version_compare(self::getSPAModuleInstance()->version, '2.0.0', '>=')) {
+            if ($groupInfos['criterion_group_type'] == 'attribute' && in_array($groupInfos['id_criterion_group_linked'], self::getSPAModuleInstance()->getSplittedGroups())) {
+                if (empty($leftJoinWhereCriterion['lastAttributeCombinationTableId'])) {
+                    $leftJoinWhereCriterion['join'][] = 'JOIN `'._DB_PREFIX_.'pm_spa_cache` spa_cache ON (acp.`id_product` = spa_cache.`id_product` AND spa_cache.`id_shop` = ' . (int)Context::getContext()->shop->id . ')';
+                } else {
+                    $leftJoinWhereCriterion['join'][] = 'JOIN `'._DB_PREFIX_.'pm_spa_cache` spa_cache ON (acp.`id_product` = spa_cache.`id_product` AND spa_cache.`id_shop` = ' . (int)Context::getContext()->shop->id . ' AND spa_cache.`id_product_attribute` = ' . $leftJoinWhereCriterion['lastAttributeCombinationTableId'] . '.`id_product_attribute`)';
+                }
+                $countColumn = 'SUM(IF(FIND_IN_SET(aclink.`id_criterion_linked`, spa_cache.`id_attribute_list`), 1, 0))';
             } else {
-                $leftJoinWhereCriterion['join'][] = 'JOIN `'._DB_PREFIX_.'pm_spa_cache` spa_cache ON (acp.`id_product` = spa_cache.`id_product` AND spa_cache.`id_shop` = ' . (int)Context::getContext()->shop->id . ' AND spa_cache.`id_product_attribute` = ' . $leftJoinWhereCriterion['lastAttributeCombinationTableId'] . '.`id_product_attribute`)';
+                if (empty($leftJoinWhereCriterion['lastAttributeCombinationTableId'])) {
+                    $leftJoinWhereCriterion['join'][] = 'LEFT JOIN `'._DB_PREFIX_.'pm_spa_cache` spa_cache ON (acp.`id_product` = spa_cache.`id_product` AND spa_cache.`id_shop` = ' . (int)Context::getContext()->shop->id . ')';
+                } else {
+                    $leftJoinWhereCriterion['join'][] = 'LEFT JOIN `'._DB_PREFIX_.'pm_spa_cache` spa_cache ON (acp.`id_product` = spa_cache.`id_product` AND spa_cache.`id_shop` = ' . (int)Context::getContext()->shop->id . ' AND spa_cache.`id_product_attribute` = ' . $leftJoinWhereCriterion['lastAttributeCombinationTableId'] . '.`id_product_attribute`)';
+                }
+                $countColumn = 'COUNT(spa_cache.`id_product_attribute`) - COUNT(DISTINCT spa_cache.`id_product`) + ' . $countColumn;
             }
-            $countColumn = 'SUM(IF(FIND_IN_SET(aclink.`id_criterion_linked`, spa_cache.`id_attribute_list`), 1, 0))';
         }
-
         if($schemas) {
             $leftJoinWhereCriterion['join'][] = 'LEFT JOIN `' . _DB_PREFIX_ . 'product` p ON (p.`id_product` = acp.`id_product`)';
             $leftJoinWhereCriterion['where'][] = ' p.`reference` LIKE "%SPL%"';
@@ -1078,7 +1085,7 @@ abstract class As4SearchEngine
         ($search['display_empty_criteria'] ? 'LEFT ' : '').'JOIN `'._DB_PREFIX_.'pm_advancedsearch_cache_product_criterion_'.(int) $search['id_search'].'` acpc ON (aclist.`id_criterion` = acpc.`id_criterion`)
         LEFT JOIN `'._DB_PREFIX_.'pm_advancedsearch_cache_product_'.(int) $search['id_search'].'` acp ON (acp.`id_cache_product` = acpc.`id_cache_product`)
         '.
-        (AdvancedSearchCoreClass::_isFilledArray($leftJoinWhereCriterion['join']) ? implode("\n ", $leftJoinWhereCriterion['join']) : '').
+        (AdvancedSearchCoreClass::_isFilledArray($leftJoinWhereCriterion['join']) ? implode("\n", $leftJoinWhereCriterion['join']) : '').
         (AdvancedSearchCoreClass::_isFilledArray($leftJoinWhereCriterion['where']) ? ' WHERE ' . implode("\n AND ", $leftJoinWhereCriterion['where']) : '') .
         ' GROUP BY ac.`id_criterion`'
         .($leftJoinWhereCriterion['make_union'] ? '' : '
@@ -1099,7 +1106,6 @@ abstract class As4SearchEngine
              ) as tmp GROUP BY `id_criterion`
             ORDER BY '.pSQL($field_order_by).' '.pSQL($groupInfos['sort_way']);
         }
-
         $result = As4SearchEngineDb::query($query);
         pm_advancedsearch4::getModuleInstance()->putInSmartyCache($customCacheKey, $result);
         return $result;
@@ -1650,13 +1656,13 @@ abstract class As4SearchEngine
             $sql .= ' WHERE ' . implode("\n AND ", $leftJoinWhereCriterion['where']);
         }
 
-        // MOD
-        $schemas = false;
-        if (isset($context->cookie) AND isset($context->cookie->schemas) and $context->cookie->schemas) {
-            $schemas = $context->cookie->schemas;
-        }
-        $sql .= ($schemas) ? ' AND p.`reference` LIKE "%SPL%"' : '';
-        // /MOD
+         // MOD
+         $schemas = false;
+         if (isset($context->cookie) AND isset($context->cookie->schemas) and $context->cookie->schemas) {
+             $schemas = $context->cookie->schemas;
+         }
+         $sql .= ($schemas) ? ' AND p.`reference` LIKE "%SPL%"' : '';
+         // /MOD
 
         $sql .= ' GROUP BY ps.`id_product`';
         if ($orderBy == 'position' && isset($id_category) && $id_category) {
@@ -1667,7 +1673,6 @@ abstract class As4SearchEngine
         if (!self::isSPAModuleActive()) {
             $sql .= ' LIMIT '.(((int)($p) - 1) * (int)($n)).','.(int)($n);
         }
-//        echo $sql;die;
         $result = As4SearchEngineDb::query($sql);
         if ((!empty($search['add_anchor_to_url']) || !empty($search['priority_on_combination_image'])) && !empty($leftJoinWhereCriterion['lastAttributeCombinationTableId'])) {
             $min_attribute_price_result = As4SearchEngineDb::query($sql_min_attribute_price);
@@ -1745,6 +1750,12 @@ abstract class As4SearchEngine
                         $row['id_image'] = $cover['id_image'];
                     }
                 }
+                if ($imagePriorityOnCombination && version_compare(_PS_VERSION_, '1.7.7.0', '>=')) {
+                    $combination_image = self::getBestImageAttribute((int)Context::getContext()->shop->id, (int)Context::getContext()->language->id, (int)$row['id_product'], (int)$row['id_product_attribute']);
+                    if (!empty($combination_image['id_image'])) {
+                        $row['cover_image_id'] = (int)$row['id_product'] . '-' . (int)$combination_image['id_image'];
+                    }
+                }
             }
         }
         $result = Product::getProductsProperties($id_lang, $result);
@@ -1754,7 +1765,7 @@ abstract class As4SearchEngine
                     if ($addAnchor) {
                         $row['link'] = Context::getContext()->link->getProductLink((int)$row['id_product'], $row['link_rewrite'], $row['category'], $row['ean13'], null, null, $row['id_product_attribute'], Configuration::get('PS_REWRITING_SETTINGS'), false, true);
                     }
-                    if ($imagePriorityOnCombination) {
+                    if ($imagePriorityOnCombination && version_compare(_PS_VERSION_, '1.7.7.0', '<')) {
                         $combination_image = self::getBestImageAttribute((int)Context::getContext()->shop->id, (int)Context::getContext()->language->id, (int)$row['id_product'], (int)$row['id_product_attribute']);
                         if (!empty($combination_image['id_image'])) {
                             $row['id_image'] = (int)$row['id_product'] . '-' . (int)$combination_image['id_image'];
@@ -1862,6 +1873,7 @@ abstract class As4SearchEngine
                 }
             }
             $return[$idLang]['jolisearch'] = 'jolisearch';
+            $return[$idLang]['prestasearch'] = 'prestasearch';
         }
         return $return[$idLang];
     }
@@ -1871,7 +1883,7 @@ abstract class As4SearchEngine
             $idLang = Context::getContext()->language->id;
         }
         $criterionsList = array();
-        $searchQuery = trim($searchQuery);
+        $searchQuery = trim(strip_tags($searchQuery));
         if (!empty($searchQuery)) {
             $searchQuery = explode('/', $searchQuery);
             $productFilterIdentifierList = self::getProductFilterSourceURLIdentifier($idLang);
@@ -1961,6 +1973,8 @@ abstract class As4SearchEngine
                     return $context->link->getModuleLink('ambjolisearch', 'jolisearch', array('search_query' => self::$productFilterListData));
                 } elseif (Tools::getValue('productFilterListSource') == 'module-ambjolisearch-jolisearch') {
                     return $context->link->getModuleLink('ambjolisearch', 'jolisearch', array('s' => self::$productFilterListData));
+                } elseif (Tools::getValue('productFilterListSource') == 'prestasearch') {
+                    return $context->link->getModuleLink('prestasearch', 'search', array('s' => self::$productFilterListData));
                 } elseif (isset($pagesList[Tools::getValue('productFilterListSource')])) {
                     if (Tools::getValue('productFilterListSource') == 'search') {
                         return $context->link->getPageLink(Tools::getValue('productFilterListSource'), null, null, array('search_query' => self::$productFilterListData));
@@ -2152,7 +2166,7 @@ abstract class As4SearchEngine
             }
             if (self::$productFilterListSource == 'search' || self::$productFilterListSource == 'jolisearch') {
                 $params['search_query'] = self::$productFilterListData;
-            } elseif (self::$productFilterListSource == 'module-ambjolisearch-jolisearch') {
+            } elseif (self::$productFilterListSource == 'module-ambjolisearch-jolisearch' || self::$productFilterListSource == 'prestasearch') {
                 $params['s'] = self::$productFilterListData;
             }
         }
@@ -2180,6 +2194,9 @@ abstract class As4SearchEngine
             if (Tools::getIsset('orderway') && Tools::getValue('orderway')) {
                 $params['orderway'] = Tools::getValue('orderway');
             }
+        }
+        if (is_array($params)) {
+            $params = array_map('strip_tags', $params);
         }
         if (Validate::isLoadedObject($seoObj)) {
             $seoURL = $seoObj->seo_url;
@@ -2368,6 +2385,11 @@ abstract class As4SearchEngine
         $intersectArray = array();
         $scoreArray = array();
         $words = explode(' ', Search::sanitize($expr, (int)$context->language->id));
+        if (Configuration::get('PS_SEARCH_MAX_WORD_LENGTH')) {
+            $psSearchMawWordLength = Configuration::get('PS_SEARCH_MAX_WORD_LENGTH');
+        } else {
+            $psSearchMawWordLength = PS_SEARCH_MAX_WORD_LENGTH;
+        }
         foreach ($words as $key => $word) {
             if (!empty($word) and Tools::strlen($word) >= (int)Configuration::get('PS_SEARCH_MINWORDLEN')) {
                 $word = str_replace(array('%', '_'), array('\\%', '\\_'), $word);
@@ -2381,11 +2403,11 @@ abstract class As4SearchEngine
                     ' AND sw.word LIKE
                     '.(
                         $word[0] == '-'
-                        ? ' \''.$start_search.pSQL(Tools::substr($word, 1, PS_SEARCH_MAX_WORD_LENGTH)).$end_search.'\''
-                        : ' \''.$start_search.pSQL(Tools::substr($word, 0, PS_SEARCH_MAX_WORD_LENGTH)).$end_search.'\''
+                        ? ' \''.$start_search.pSQL(Tools::substr($word, 1, $psSearchMawWordLength)).$end_search.'\''
+                        : ' \''.$start_search.pSQL(Tools::substr($word, 0, $psSearchMawWordLength)).$end_search.'\''
                     );
                 if ($word[0] != '-') {
-                    $scoreArray[] = 'sw.word LIKE \''.$start_search.pSQL(Tools::substr($word, 0, PS_SEARCH_MAX_WORD_LENGTH)).$end_search.'\'';
+                    $scoreArray[] = 'sw.word LIKE \''.$start_search.pSQL(Tools::substr($word, 0, $psSearchMawWordLength)).$end_search.'\'';
                 }
             } else {
                 unset($words[$key]);

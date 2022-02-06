@@ -86,14 +86,16 @@ class pm_advancedsearch4advancedsearch4ModuleFrontController extends ModuleFront
     private function setSEOTags()
     {
         $this->id_seo = Tools::getValue('id_seo', false);
-        $seo_url = Tools::getValue('seo_url', false);
+        $seo_url = strip_tags(Tools::getValue('seo_url', false));
         if ($seo_url && $this->id_seo) {
             $resultSeoUrl = AdvancedSearchSeoClass::getSeoSearchByIdSeo((int)$this->id_seo, (int)$this->context->language->id);
             if (!$resultSeoUrl) {
                 Tools::redirect('404');
             }
             if ($resultSeoUrl[0]['deleted']) {
-                header("Status: 301 Moved Permanently", false, 301);
+                if (!headers_sent()) {
+                    header("Status: 301 Moved Permanently", false, 301);
+                }
                 Tools::redirect('index');
             }
             $pageNumber = (int)Tools::getValue('p');
@@ -116,9 +118,13 @@ class pm_advancedsearch4advancedsearch4ModuleFrontController extends ModuleFront
             ));
         } elseif (Tools::getValue('only_products')) {
             if ($this->id_seo && (Tools::getValue('p') || Tools::getValue('n'))) {
-                header('X-Robots-Tag: noindex, follow', true);
+                if (!headers_sent()) {
+                    header('X-Robots-Tag: noindex, follow', true);
+                }
             } else {
-                header('X-Robots-Tag: noindex, nofollow', true);
+                if (!headers_sent()) {
+                    header('X-Robots-Tag: noindex, nofollow', true);
+                }
             }
             $this->context->smarty->assign(array(
                 'nofollow' => true,
@@ -128,10 +134,12 @@ class pm_advancedsearch4advancedsearch4ModuleFrontController extends ModuleFront
     }
     public function process()
     {
-        $seo_url = Tools::getValue('seo_url', false);
+        $seo_url = strip_tags(Tools::getValue('seo_url', false));
         if ($seo_url == 'products-comparison') {
             ob_end_clean();
-            header("Status: 301 Moved Permanently", false, 301);
+            if (!headers_sent()) {
+                header("Status: 301 Moved Permanently", false, 301);
+            }
             Tools::redirect('products-comparison.php?ajax='.(int)Tools::getValue('ajax').'&action='.Tools::getValue('action').'&id_product='.(int)Tools::getValue('id_product'));
         }
         if ($seo_url && $this->id_seo) {
@@ -140,18 +148,27 @@ class pm_advancedsearch4advancedsearch4ModuleFrontController extends ModuleFront
                 Tools::redirect('404');
             }
             if ($resultSeoUrl[0]['deleted']) {
-                header("Status: 301 Moved Permanently", false, 301);
+                if (!headers_sent()) {
+                    header("Status: 301 Moved Permanently", false, 301);
+                }
                 Tools::redirect('index');
             }
             $this->id_search = $resultSeoUrl[0]['id_search'];
             $this->searchInstance = new AdvancedSearchClass((int)$this->id_search, (int)$this->context->language->id);
+            if (!Validate::isLoadedObject($this->searchInstance)) {
+                Tools::redirect('404');
+            }
             if (!$this->searchInstance->active) {
-                header("Status: 307 Temporary Redirect", false, 307);
+                if (!headers_sent()) {
+                    header("Status: 307 Temporary Redirect", false, 307);
+                }
                 Tools::redirect('index');
             }
             $seoUrlCheck = current(explode('/', $seo_url));
             if ($resultSeoUrl[0]['seo_url'] != $seoUrlCheck) {
-                header("Status: 301 Moved Permanently", false, 301);
+                if (!headers_sent()) {
+                    header("Status: 301 Moved Permanently", false, 301);
+                }
                 Tools::redirect($this->context->link->getModuleLink('pm_advancedsearch4', 'seo', array('id_seo' => $this->idSeo, 'seo_url' => $resultSeoUrl[0]['seo_url'])));
                 die();
             }
@@ -173,7 +190,9 @@ class pm_advancedsearch4advancedsearch4ModuleFrontController extends ModuleFront
             }
             if ($hasPriceCriterionGroup && $resultSeoUrl[0]['id_currency'] && $this->context->cookie->id_currency != (int)$resultSeoUrl[0]['id_currency']) {
                 $this->context->cookie->id_currency = $resultSeoUrl[0]['id_currency'];
-                header('Refresh: 1; URL='.$_SERVER['REQUEST_URI']);
+                if (!headers_sent()) {
+                    header('Refresh: 1; URL='.$_SERVER['REQUEST_URI']);
+                }
                 die;
             }
             $this->context->smarty->assign('as_cross_links', AdvancedSearchSeoClass::getCrossLinksSeo((int)$this->context->language->id, $resultSeoUrl[0]['id_seo']));
@@ -197,6 +216,16 @@ class pm_advancedsearch4advancedsearch4ModuleFrontController extends ModuleFront
             }
             $this->id_search = (int)Tools::getValue('id_search');
             $this->searchInstance = new AdvancedSearchClass((int)$this->id_search, (int)$this->context->language->id);
+            if (!Validate::isLoadedObject($this->searchInstance)) {
+                Tools::redirect('404');
+            } else {
+                if (!$this->searchInstance->active) {
+                    if (!headers_sent()) {
+                        header("Status: 307 Temporary Redirect", false, 307);
+                    }
+                    Tools::redirect('index');
+                }
+            }
             $this->criterions = Tools::getValue('as4c', array());
             if (is_array($this->criterions)) {
                 $this->criterions = As4SearchEngine::cleanArrayCriterion($this->criterions);

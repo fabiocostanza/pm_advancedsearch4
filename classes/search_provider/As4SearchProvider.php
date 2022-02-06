@@ -43,24 +43,30 @@ class As4SearchProvider implements ProductSearchProviderInterface
     public function getSortOrders($includeAll = false, $includeDefaultSortOrders = true)
     {
         $config = pm_advancedsearch4::getModuleConfigurationStatic();
+        $sortOrders = array();
         if ($includeDefaultSortOrders) {
             $sortOrders = $this->sortOrderFactory->getDefaultSortOrders();
+        }
+        if ($includeAll ||
+            ((version_compare(_PS_VERSION_, '1.7.3.1', '>=') && !empty($config['sortOrders']['product.position.asc']))
+            || (version_compare(_PS_VERSION_, '1.7.3.1', '<') && !empty($config['sortOrders']['product.position.desc'])))
+        ) {
             if (version_compare(_PS_VERSION_, '1.7.3.1', '>=')) {
                 $sortOrders[] = (new SortOrder('product', 'position', 'asc'))->setLabel($this->module->l('Relevance (reverse)', 'as4searchprovider'));
             } else {
                 $sortOrders[] = (new SortOrder('product', 'position', 'desc'))->setLabel($this->module->l('Relevance (reverse)', 'as4searchprovider'));
             }
+        }
+        if ($includeDefaultSortOrders) {
             usort($sortOrders, function ($a, $b) {
                 if ($a->getField() == $b->getField()) {
                     if ($a->getDirection() == $b->getDirection()) {
                         return 0;
                     }
-                    return ($a->getDirection() < $b->getDirection()) ? -1 : 1;
+                    return ($a->getDirection() > $b->getDirection()) ? -1 : 1;
                 }
-                return ($a->getField() < $b->getField()) ? -1 : 1;
+                return ($a->getField() > $b->getField()) ? -1 : 1;
             });
-        } else {
-            $sortOrders = array();
         }
         if ($includeAll || !empty($config['sortOrders']['product.sales.asc'])) {
             $sortOrders[] = (new SortOrder('product', 'sales', 'asc'))->setLabel($this->module->l('Sales, Lower first', 'as4searchprovider'));

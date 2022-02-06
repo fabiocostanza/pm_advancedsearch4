@@ -524,8 +524,10 @@ function checkSeoCriteriaCombination() {
 	});
 }
 function ASStr2url(e) {
-	if (typeof str2url == 'function')
-		return str2url($(e).val(), 'UTF-8');
+	if (typeof str2url == 'function') {
+		$(e).val(str2url($(e).val(), 'UTF-8'));
+		return true;
+	}
 	str = $(e).val();
 
 	// From admin.js - 1.6.1.0

@@ -503,7 +503,7 @@ abstract class As4SearchEngineIndexation
             $where_clause = 'p.`'.bqSQL($field).'` = "'.pSQL($field_value).'"';
         }
         return As4SearchEngineDb::query('
-                SELECT acp.`id_cache_product`
+                SELECT DISTINCT acp.`id_cache_product`
                 FROM `'._DB_PREFIX_.'pm_advancedsearch_cache_product_'.(int) $id_search.'` acp
                 LEFT JOIN `'._DB_PREFIX_.'product` p ON (p.`id_product` = acp.`id_product`)
                 ' . Shop::addSqlAssociation('product', 'p') . '
@@ -701,6 +701,7 @@ abstract class As4SearchEngineIndexation
                     $liste_id_shop = array($id_shop);
                 }
                 foreach ($liste_id_shop as $id_shop) {
+                    $priceCombinationImpact = null;
                     if (self::productHasAttributes($row['id_product'])) {
                         if ($row['cache_default_attribute'] == 0) {
                             Product::updateDefaultAttribute($row['id_product']);
@@ -712,8 +713,13 @@ abstract class As4SearchEngineIndexation
                         }
                         self::$defaultSpecificPriceIDPList[(int)$row['id_cache_product']] = (int)$row['id_product_attribute'];
                         if ($row['cache_default_attribute']) {
-                            $price += self::getDefaultAttributePrice($row['cache_default_attribute'], $id_shop);
+                            if ($row['price'] == -1 || $row['id_product_attribute'] == 0) {
+                                $priceCombinationImpact = self::getDefaultAttributePrice($row['cache_default_attribute'], $id_shop);
+                            }
                         }
+                    }
+                    if ($priceCombinationImpact !== null) {
+                        $price += $priceCombinationImpact;
                     }
                     $reduc = 0;
                     if ($row['reduction_type'] == 'amount') {

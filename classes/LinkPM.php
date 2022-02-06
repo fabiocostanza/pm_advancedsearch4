@@ -25,7 +25,7 @@ class LinkPM extends Link
             if ($controllerName == 'seo') {
                 $params = array(
                     'id_seo' => (int)Tools::getValue('id_seo'),
-                    'seo_url' => Tools::getValue('seo_url')
+                    'seo_url' => strip_tags(Tools::getValue('seo_url')),
                 );
                 if (isset($array['p'])) {
                     $params['p'] = (int)$array['p'];
@@ -33,7 +33,7 @@ class LinkPM extends Link
             } elseif ($controllerName == 'searchresults') {
                 $params = array(
                     'id_search' => (int)Tools::getValue('id_search'),
-                    'as4_sq' => Tools::getValue('as4_sq')
+                    'as4_sq' => strip_tags(Tools::getValue('as4_sq')),
                 );
                 if (isset($array['p'])) {
                     $params['p'] = (int)$array['p'];
@@ -59,6 +59,9 @@ class LinkPM extends Link
             }
             if (Tools::getIsset('orderway') && Tools::getValue('orderway')) {
                 $params['orderway'] = Tools::getValue('orderway');
+            }
+            if (is_array($params)) {
+                $params = array_map('strip_tags', $params);
             }
             $url = $this->getModuleLink('pm_advancedsearch4', $controllerName, $params);
             if (!$array) {

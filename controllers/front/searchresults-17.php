@@ -42,7 +42,6 @@ class pm_advancedsearch4searchresultsModuleFrontController extends AdvancedSearc
         } elseif(Tools::getIsset('show_products') AND Tools::getValue('show_products')) {
             $this->context->cookie->schemas = false;
         }
-
         $this->php_self = 'module-pm_advancedsearch4-searchresults';
         if (!headers_sent()) {
             header('X-Robots-Tag: noindex', true);
@@ -51,11 +50,12 @@ class pm_advancedsearch4searchresultsModuleFrontController extends AdvancedSearc
         $this->searchInstance = new AdvancedSearchClass((int)$this->idSearch, (int)$this->context->cookie->id_lang);
         if (!Validate::isLoadedObject($this->searchInstance)) {
             Tools::redirect('404');
-        } else {
-            if (!$this->searchInstance->active) {
+        }
+        if (!$this->searchInstance->active) {
+            if (!headers_sent()) {
                 header("Status: 307 Temporary Redirect", false, 307);
-                Tools::redirect('index');
             }
+            Tools::redirect('index');
         }
         $this->currentIdCategory = As4SearchEngine::getCurrentCategory();
         $this->currentIdManufacturer = As4SearchEngine::getCurrentManufacturer();
@@ -74,7 +74,9 @@ class pm_advancedsearch4searchresultsModuleFrontController extends AdvancedSearc
                 $selectedSortOrder = SortOrder::newFromString(trim(Tools::getValue('order')));
             } catch (Exception $e) {
                 $fixedSearchUrl = $this->rewriteOrderParameter();
-                header('Location:' . $fixedSearchUrl, true, 301);
+                if (!headers_sent()) {
+                    header('Location:' . $fixedSearchUrl, true, 301);
+                }
             }
         }
         if (Tools::getIsset('from-xhr')) {
@@ -96,7 +98,7 @@ class pm_advancedsearch4searchresultsModuleFrontController extends AdvancedSearc
     }
     protected function setCriterions()
     {
-        $searchQuery = trim(Tools::getValue('as4_sq'));
+        $searchQuery = trim(strip_tags(Tools::getValue('as4_sq')));
         if (!empty($searchQuery)) {
             $this->criterionsList = As4SearchEngine::getCriterionsFromURL($this->idSearch, $searchQuery);
             if ($this->searchInstance->filter_by_emplacement) {
@@ -210,7 +212,7 @@ class pm_advancedsearch4searchresultsModuleFrontController extends AdvancedSearc
     {
         return $this->currentCategoryObject;
     }
-
+    
     public function getCriterionsList()
     {
         return $this->criterionsList;

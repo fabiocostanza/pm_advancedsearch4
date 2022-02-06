@@ -3,9 +3,9 @@
  * Advanced Search 4
  *
  * @author    Presta-Module.com <support@presta-module.com> - http://www.presta-module.com
- * @copyright Presta-Module 2020 - http://www.presta-module.com
+ * @copyright Presta-Module 2021 - http://www.presta-module.com
  * @license   Commercial
- * @version   4.12.10
+ * @version   4.12.14
  *
  *           ____     __  __
  *          |  _ \   |  \/  |
@@ -49,6 +49,16 @@ class PM_AdvancedSearch4 extends AdvancedSearchWidgetProxy
     private $originalPositionSortableCriterion = array('attribute', 'category', 'subcategory');
     private $criteriaGroupLabels;
     private $criterionGroupIsTemplatisable = array('attribute', 'feature', 'manufacturer', 'supplier', 'category' );
+    protected $criteria_group_type_interal_name = array(
+        1 => 'select',
+        2 => 'image',
+        3 => 'link',
+        4 => 'checkbox',
+        5 => 'slider',
+        7 => 'colorsquare',
+        8 => 'range',
+        9 => 'level_depth',
+);
     private $display_vertical_search_block = array();
     public $_require_maintenance = true;
     public static $_module_prefix = 'as4';
@@ -100,7 +110,7 @@ class PM_AdvancedSearch4 extends AdvancedSearchWidgetProxy
         $this->tab = 'search_filter';
         $this->need_instance = 0;
         $this->module_key = 'e0578dd1826016f7acb8045ad15372b4';
-        $this->version = '4.12.10';
+        $this->version = '4.12.14';
         $this->ps_versions_compliancy['min'] = '1.6.0.1';
         $this->controllers = array(
             'advancedsearch4',
@@ -170,8 +180,8 @@ class PM_AdvancedSearch4 extends AdvancedSearchWidgetProxy
             }
             $this->_support_link = array(
                 array('link' => $forum_url, 'target' => '_blank', 'label' => $this->l('Forum topic')),
-
-                array('link' => 'http://addons.prestashop.com/contact-community.php?id_product=2778', 'target' => '_blank', 'label' => $this->l('Support contact')),
+                
+                array('link' => 'https://addons.prestashop.com/contact-form.php?id_product=2778', 'target' => '_blank', 'label' => $this->l('Support contact')),
             );
             $this->display_vertical_search_block = array();
             foreach (array('displayLeftColumn', 'displayRightColumn') as $hookName) {
@@ -249,7 +259,11 @@ class PM_AdvancedSearch4 extends AdvancedSearchWidgetProxy
         if (!empty($manufacturerRoute) && preg_match('/{id}/', $manufacturerRoute)) {
             $searchResultsManufacturerPrefix = $manufacturerRoute;
         }
-        $as4SqRegeXp = '[_a-zA-Z0-9\pL\pS/.:+-]*';
+        $as4SqRegeXp = '[_a-zA-Z0-9\x{0600}-\x{06FF}\pL\pS/.:+-]*';
+        $defaultRewritePattern = '[_a-zA-Z0-9\pL\pS-]*';
+        if (defined('Dispatcher::REWRITE_PATTERN')) {
+            $defaultRewritePattern = Dispatcher::REWRITE_PATTERN;
+        }
         return array(
             'module-pm_advancedsearch4-seo' => array(
                 'controller' => 'seo',
@@ -300,7 +314,7 @@ class PM_AdvancedSearch4 extends AdvancedSearchWidgetProxy
                     'id' => array('regexp' => '[0-9]+', 'param' => 'id_category_search'),
                     'id_search' => array('regexp' => '[0-9]+', 'param' => 'id_search'),
                     'as4_sq' =>    array('regexp' => $as4SqRegeXp, 'param' => 'as4_sq'),
-                    'rewrite' => array('regexp' => '[_a-zA-Z0-9\pL\pS-]*'),
+                    'rewrite' => array('regexp' => $defaultRewritePattern),
                     'meta_keywords' => array('regexp' => '[_a-zA-Z0-9-\pL]*'),
                     'meta_title' => array('regexp' => '[_a-zA-Z0-9-\pL]*'),
                 ),
@@ -317,7 +331,7 @@ class PM_AdvancedSearch4 extends AdvancedSearchWidgetProxy
                     'id' => array('regexp' => '[0-9]+', 'param' => 'id_supplier_search'),
                     'id_search' => array('regexp' => '[0-9]+', 'param' => 'id_search'),
                     'as4_sq' =>    array('regexp' => $as4SqRegeXp, 'param' => 'as4_sq'),
-                    'rewrite' => array('regexp' => '[_a-zA-Z0-9\pL\pS-]*'),
+                    'rewrite' => array('regexp' => $defaultRewritePattern),
                     'meta_keywords' => array('regexp' => '[_a-zA-Z0-9-\pL]*'),
                     'meta_title' => array('regexp' => '[_a-zA-Z0-9-\pL]*'),
                 ),
@@ -334,7 +348,7 @@ class PM_AdvancedSearch4 extends AdvancedSearchWidgetProxy
                     'id' => array('regexp' => '[0-9]+', 'param' => 'id_manufacturer_search'),
                     'id_search' => array('regexp' => '[0-9]+', 'param' => 'id_search'),
                     'as4_sq' =>    array('regexp' => $as4SqRegeXp, 'param' => 'as4_sq'),
-                    'rewrite' => array('regexp' => '[_a-zA-Z0-9\pL\pS-]*'),
+                    'rewrite' => array('regexp' => $defaultRewritePattern),
                     'meta_keywords' => array('regexp' => '[_a-zA-Z0-9-\pL]*'),
                     'meta_title' => array('regexp' => '[_a-zA-Z0-9-\pL]*'),
                 ),
@@ -1241,7 +1255,6 @@ class PM_AdvancedSearch4 extends AdvancedSearchWidgetProxy
                 self::clearSmartyCache((int)$ObjAdvancedSearchClass->id);
                 $this->_html .= '<script type="text/javascript">';
                 $this->_html .= 'parent.parent.loadTabPanel("#wrapAsTab","li#TabSearchAdminPanel' . $ObjAdvancedSearchClass->id . '");';
-                $this->_html .= 'parent.parent.updateSearchNameIntoTab("li#TabSearchAdminPanel' . $ObjAdvancedSearchClass->id . '", '.Tools::jsonEncode($ObjAdvancedSearchClass->internal_name).');';
                 $this->_html .= 'parent.parent.show_info("' . $this->l('Search has been updated successfully') . '");parent.parent.closeDialogIframe();';
                 $this->_html .= '</script>';
             }
@@ -2978,7 +2991,7 @@ class PM_AdvancedSearch4 extends AdvancedSearchWidgetProxy
                             }
                         }
                         $row['id_seo'] = (int)Tools::getValue('id_seo');
-                        $row['seo_url'] = (string)trim(Tools::getValue('seo_url'));
+                        $row['seo_url'] = (string)trim(strip_tags(Tools::getValue('seo_url')));
                     }
                 }
                 if (is_array($selected_criterion) && sizeof($selected_criterion)) {
@@ -3258,6 +3271,9 @@ class PM_AdvancedSearch4 extends AdvancedSearchWidgetProxy
                                         $this->recursiveGetParents($selected_criterions, $linkedList, $idCategoryStart, $selected_criterions[0]);
                                     }
                                     foreach ($criteriaList as $r => &$criterion_row) {
+                                        if (!empty($criterion_row['is_custom'])) {
+                                            continue;
+                                        }
                                         if ($row2['criterion_group_type'] == 'category' && empty($row2['context_type'])) {
                                             if ((int)$criterion_row['id_criterion_linked'] == (int)$idCategoryStart) {
                                                 continue;
@@ -3366,7 +3382,22 @@ class PM_AdvancedSearch4 extends AdvancedSearchWidgetProxy
                     }
                 }
             }
-            if (empty($result[$key]['id_seo']) && !empty($result[$key]['hide_empty_crit_group']) && empty($result[$key]['display_empty_criteria']) && (isset($result[$key]['total_products']) && $result[$key]['total_products'] == 0) && (($result[$key]['filter_by_emplacement'] && $result[$key]['selected_criterion'] == $result[$key]['selected_criterion_from_emplacement']) || (!$result[$key]['filter_by_emplacement'] && !self::_isFilledArray($result[$key]['selected_criterion'])))) {
+            $result[$key]['nb_visible_criterions_groups'] = 0;
+            foreach ($result[$key]['criterions_groups'] as $criterions_group_key => $criterions_group) {
+                $result[$key]['criterions_groups'][$criterions_group_key]['display_group'] = false;
+                if (!(isset($this->criteria_group_type_interal_name[$criterions_group['display_type']]) && ($this->criteria_group_type_interal_name[$criterions_group['display_type']] == 'slider' || $this->criteria_group_type_interal_name[$criterions_group['display_type']] == 'range') && isset($result[$key]['criterions'][$criterions_group['id_criterion_group']]) && isset($result[$key]['criterions'][$criterions_group['id_criterion_group']][0]) && ((isset($result[$key]['criterions'][$criterions_group['id_criterion_group']][0]['cur_min']) && isset($result[$key]['criterions'][$criterions_group['id_criterion_group']][0]['cur_max']) && $result[$key]['criterions'][$criterions_group['id_criterion_group']][0]['cur_min'] == 0 && $result[$key]['criterions'][$criterions_group['id_criterion_group']][0]['cur_max'] == 0) || (isset($result[$key]['criterions'][$criterions_group['id_criterion_group']][0]['min']) && isset($result[$key]['criterions'][$criterions_group['id_criterion_group']][0]['max']) && $result[$key]['criterions'][$criterions_group['id_criterion_group']][0]['min'] == 0 && $result[$key]['criterions'][$criterions_group['id_criterion_group']][0]['max'] == 0))) && ($criterions_group['visible'] && $result[$key]['hide_empty_crit_group'] && isset($result[$key]['criterions'][$criterions_group['id_criterion_group']]) && sizeof($result[$key]['criterions'][$criterions_group['id_criterion_group']])) || ($criterions_group['visible'] && !$result[$key]['hide_empty_crit_group']) || ($criterions_group['visible'] && $result[$key]['step_search'])) {
+                    $result[$key]['criterions_groups'][$criterions_group_key]['display_group'] = true;
+                    $result[$key]['nb_visible_criterions_groups']++;
+                }
+            }
+            if (empty($result[$key]['id_seo']) && !empty($result[$key]['hide_empty_crit_group']) && empty($result[$key]['display_empty_criteria'])
+                && (isset($result[$key]['total_products']) && $result[$key]['total_products'] == 0)
+                && (
+                    ($result[$key]['filter_by_emplacement'] && $result[$key]['selected_criterion'] == $result[$key]['selected_criterion_from_emplacement'])
+                    ||
+                    (!$result[$key]['filter_by_emplacement'] && !self::_isFilledArray($result[$key]['selected_criterion']))
+                )
+            ) {
                 unset($result[$key]);
             }
         }
@@ -3733,9 +3764,13 @@ class PM_AdvancedSearch4 extends AdvancedSearchWidgetProxy
     }
     public function setProductFilterContext()
     {
-        if (isset($this->context->controller) && is_object($this->context->controller) && isset($this->context->controller->php_self)) {
-            if (in_array($this->context->controller->php_self, As4SearchEngine::$validPageName)) {
+        if (isset($this->context->controller) && is_object($this->context->controller)) {
+            if (isset($this->context->controller->php_self) && in_array($this->context->controller->php_self, As4SearchEngine::$validPageName)) {
                 As4SearchEngine::$productFilterListSource = $this->context->controller->php_self;
+            } elseif (get_class($this->context->controller) == 'IqitSearchSearchiqitModuleFrontController') {
+                As4SearchEngine::$productFilterListSource = 'search';
+            } elseif (get_class($this->context->controller) == 'PrestaSearchSearchModuleFrontController') {
+                As4SearchEngine::$productFilterListSource = 'prestasearch';
             }
         }
         if (As4SearchEngine::$productFilterListSource == 'best-sales') {
@@ -3744,7 +3779,11 @@ class PM_AdvancedSearch4 extends AdvancedSearchWidgetProxy
             As4SearchEngine::getNewProductsIds();
         } elseif (As4SearchEngine::$productFilterListSource == 'prices-drop') {
             As4SearchEngine::getPricesDropProductsIds();
-        } elseif (As4SearchEngine::$productFilterListSource == 'search' || As4SearchEngine::$productFilterListSource == 'jolisearch' || As4SearchEngine::$productFilterListSource == 'module-ambjolisearch-jolisearch') {
+        } elseif (As4SearchEngine::$productFilterListSource == 'search'
+            || As4SearchEngine::$productFilterListSource == 'jolisearch'
+            || As4SearchEngine::$productFilterListSource == 'module-ambjolisearch-jolisearch'
+            || As4SearchEngine::$productFilterListSource == 'prestasearch'
+        ) {
             if (version_compare(_PS_VERSION_, '1.7.0.0', '>=')) {
                 if (empty(As4SearchEngine::$productFilterListData) && Tools::getIsset('s') && Tools::getValue('s')) {
                     As4SearchEngine::$productFilterListData = Tools::getValue('s');
@@ -3801,6 +3840,27 @@ class PM_AdvancedSearch4 extends AdvancedSearchWidgetProxy
                         As4SearchEngine::$productFilterListQuery = false;
                     }
                 }
+            } elseif (As4SearchEngine::$productFilterListSource == 'prestasearch') {
+                As4SearchEngine::$productFilterListSource = 'prestasearch';
+                $prestaSearchModule = Module::getInstanceByName('prestasearch');
+                if (Validate::isLoadedObject($prestaSearchModule) && $prestaSearchModule->active && method_exists($prestaSearchModule, 'getFoundProductIDs')) {
+                    if (As4SearchEngine::$productFilterListData) {
+                        $prestaSearchModule->search_query = As4SearchEngine::$productFilterListData;
+                        $results = $prestaSearchModule->getFullSearchResults(
+                            1,
+                            (int)Configuration::get('PS_PRODUCTS_PER_PAGE'),
+                            'position',
+                            'desc',
+                            $prestaSearchModule->xhr == false ? true : false
+                        );
+                    }
+                    $idProductList = array_map('intval', $prestaSearchModule->getFoundProductIDs());
+                    if (!empty($idProductList)) {
+                        As4SearchEngine::$productFilterListQuery = implode(',', $idProductList);
+                    } else {
+                        As4SearchEngine::$productFilterListQuery = '-1';
+                    }
+                }
             }
         }
     }
@@ -3834,7 +3894,9 @@ class PM_AdvancedSearch4 extends AdvancedSearchWidgetProxy
                 if (Configuration::get('PS_COMPARATOR_MAX_ITEM') > 0) {
                     $this->context->controller->addJS(_THEME_JS_DIR_ . 'products-comparison.js');
                 }
-                $this->context->controller->addJquery();
+                if (version_compare(_PS_VERSION_, '1.7.7.0', '<')) {
+                   $this->context->controller->addJquery();
+                }
                 $ui_slider_path = Media::getJqueryUIPath('ui.slider', 'base', true);
                 $this->context->controller->addCSS($ui_slider_path['css'], 'all', false);
                 $this->context->controller->addCSS(__PS_BASE_URI__ . 'modules/' . $this->name . '/views/css/' . $this->name . '.css', 'all');
@@ -3867,7 +3929,7 @@ class PM_AdvancedSearch4 extends AdvancedSearchWidgetProxy
                 }
                 $this->context->controller->registerStylesheet('modules-'.$this->name.'-css-main', 'modules/'.$this->name.'/views/css/'.$this->name.'-17.css', array('media' => 'all', 'priority' => 900));
                 $this->context->controller->registerStylesheet('modules-'.$this->name.'-css-dyn', 'modules/'.$this->name.'/'.self::DYN_CSS_FILE, array('media' => 'all', 'priority' => 900));
-//                $this->context->controller->addJqueryUI(array('ui.slider', 'ui.core'));
+                $this->context->controller->addJqueryUI(array('ui.slider', 'ui.core'));
                 $this->context->controller->registerJavascript('selectize/selectize.min.js', 'modules/'.$this->name.'/views/js/selectize/selectize.min.js', array('position' => 'bottom', 'priority' => 150));
                 $this->context->controller->registerStylesheet('selectize/selectize.css', 'modules/'.$this->name.'/views/css/selectize/selectize.css', array('media' => 'all', 'priority' => 900));
                 $this->context->controller->registerJavascript('modules-'.$this->name.'-js-2', 'modules/'.$this->name.'/views/js/jquery.ui.touch-punch.min.js', array('position' => 'bottom', 'priority' => 150));
@@ -3877,7 +3939,6 @@ class PM_AdvancedSearch4 extends AdvancedSearchWidgetProxy
                 $this->context->controller->registerJavascript('modules-'.$this->name.'-js-6', 'modules/'.$this->name.'/views/js/pm_advancedsearch.js', array('position' => 'bottom', 'priority' => 150));
             }
         }
-        $this->criteria_group_type_interal_name = array(1 => 'select', 2 => 'image', 3 => 'link', 4 => 'checkbox', 5 => 'slider', 7 => 'colorsquare', 8 => 'range', 9 => 'level_depth');
         $config = $this->_getModuleConfiguration();
         if (!empty($this->context->cookie->nb_item_per_page)) {
             $as4_localCacheKey = sha1(As4SearchEngine::getLocalStorageCacheKey() . $this->context->cookie->nb_item_per_page);
@@ -3887,7 +3948,7 @@ class PM_AdvancedSearch4 extends AdvancedSearchWidgetProxy
         $this->context->smarty->assign(array(
             'ASSearchUrlForm' => $this->context->link->getModuleLink('pm_advancedsearch4', 'advancedsearch4'),
             'as4_productFilterListSource' => As4SearchEngine::$productFilterListSource,
-            'as4_productFilterListData' => (isset(As4SearchEngine::$productFilterListSource) && (As4SearchEngine::$productFilterListSource == 'search' || As4SearchEngine::$productFilterListSource == 'jolisearch' || As4SearchEngine::$productFilterListSource == 'module-ambjolisearch-jolisearch') && !empty(As4SearchEngine::$productFilterListData) ? self::getDataSerialized(As4SearchEngine::$productFilterListData) : ''),
+            'as4_productFilterListData' => (isset(As4SearchEngine::$productFilterListSource) && (As4SearchEngine::$productFilterListSource == 'search' || As4SearchEngine::$productFilterListSource == 'jolisearch' || As4SearchEngine::$productFilterListSource == 'prestasearch' || As4SearchEngine::$productFilterListSource == 'module-ambjolisearch-jolisearch') && !empty(As4SearchEngine::$productFilterListData) ? self::getDataSerialized(As4SearchEngine::$productFilterListData) : ''),
             'as_obj' => $this,
             'as_path' => $this->_path,
             'col_img_dir' => _PS_COL_IMG_DIR_,
@@ -4181,7 +4242,7 @@ class PM_AdvancedSearch4 extends AdvancedSearchWidgetProxy
             }
         }
     }
-    public function getCategoryProducts($id_lang, $p, $n, $order_by = null, $order_way = null, $get_total = false, $active = true, $random = false, $random_number_products = 1, $check_access = true, Context $context = null, $schemas_pr = null)
+    public function getCategoryProducts($id_lang, $p, $n, $order_by = null, $order_way = null, $get_total = false, $active = true, $random = false, $random_number_products = 1, $check_access = true, Context $context = null)
     {
         if (!$context) {
             $context = $this->context;
@@ -4209,8 +4270,8 @@ class PM_AdvancedSearch4 extends AdvancedSearchWidgetProxy
                     AND c.nleft >= '.(int)$context->controller->getCategory()->nleft.' AND c.nright <= '.(int)$context->controller->getCategory()->nright.')
                     WHERE c.id_category > 0 '.
                 (($front and !$schemas) ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '').
-                ($active ? ' AND product_shop.`active` = 1' : '') .
-                ($id_supplier ? 'AND p.id_supplier = '.(int)$id_supplier : '') .
+                ($active ? ' AND product_shop.`active` = 1' : '').
+                ($id_supplier ? 'AND p.id_supplier = '.(int)$id_supplier : '').
                 (($front AND $schemas) ? ' AND p.`reference` LIKE "%SPL%"' : ' AND p.`reference` NOT LIKE "%SPL%"');
             return (int)As4SearchEngineDb::value($sql);
         }
@@ -4269,10 +4330,10 @@ class PM_AdvancedSearch4 extends AdvancedSearchWidgetProxy
                 WHERE c.id_category > 0
                     AND product_shop.`id_shop` = '.(int)$context->shop->id
                     .($active ? ' AND product_shop.`active` = 1' : '')
-                    .(($front and !$schemas) ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '')
+                    .(($front and !$schemas)  ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '')
                     .($id_supplier ? ' AND p.id_supplier = '.(int)$id_supplier : '')
                     . (($front AND $schemas) ? ' AND p.`reference` LIKE "%SPL%"' : ' AND p.`reference` NOT LIKE "%SPL%"'); // MOD
-            $sql .= ' GROUP BY cp.id_product';
+                $sql .= ' GROUP BY cp.id_product';
         } else {
             $sql = 'SELECT p.*, product_shop.*, stock.out_of_stock, IFNULL(stock.quantity, 0) as quantity'.(Combination::isFeatureActive() ? ', MAX(product_attribute_shop.id_product_attribute) id_product_attribute, MAX(product_attribute_shop.minimal_quantity) AS product_attribute_minimal_quantity' : '').', pl.`description`, pl.`description_short`, pl.`available_now`,
                     pl.`available_later`, pl.`link_rewrite`, pl.`meta_description`, pl.`meta_keywords`, pl.`meta_title`, pl.`name`, MAX(image_shop.`id_image`) id_image,

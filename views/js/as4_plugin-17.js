@@ -187,7 +187,7 @@ var as4Plugin = {
         if (as4Plugin.getParamValue(idSearch, 'scrollTopActive') == true || forceScroll === true) {
             pm_scrollTopSelector = as4Plugin.getSearchResultsSelector(idSearch);
 
-            if (typeof($(pm_scrollTopSelector)) != 'undefined' && $(pm_scrollTopSelector).size() > 0) {
+            if (typeof($(pm_scrollTopSelector)) != 'undefined' && $(pm_scrollTopSelector).length > 0) {
                 $('html, body').animate({
                     scrollTop: $(pm_scrollTopSelector).offset().top
                 }, 500);
@@ -208,7 +208,7 @@ var as4Plugin = {
         }
 
         var destinationElement = $('body ' + searchResultsSelector);
-        if ($(destinationElement).size() > 0) {
+        if ($(destinationElement).length > 0) {
             // Animation complete.
             $(searchResultsSelector).css('height', 'auto');
         }
@@ -245,26 +245,32 @@ var as4Plugin = {
         var hookName = as4Plugin.getParamValue(id_search, 'hookName');
         var searchResultsSelector = as4Plugin.getSearchResultsSelector(id_search);
 
-        if ($('#js-product-list').size() == 0 && withProduct) {
+        if ($('#js-product-list').length == 0 && withProduct) {
             if (hookName == 'home') {
                 // Remove any extra content from homepage
                 $('#PM_ASBlockOutput_' + responseText.id_search).parent().find('*:not([id="PM_ASBlockOutput_' + responseText.id_search + '"])').remove();
-                $('#PM_ASBlockOutput_' + responseText.id_search).after('<section id="products"><div id="js-product-list-top" /><div id="js-product-list" /><div id="js-product-list-bottom" /></section>');
+                $('#PM_ASBlockOutput_' + responseText.id_search).after('<section id="products"><div id="js-product-list-top"></div><div id="js-product-list"></div><div id="js-product-list-bottom"></div></section>');
             } else {
                 $(searchResultsSelector).find('*:not([id="PM_ASBlockOutput_' + responseText.id_search + '"])').remove();
-                $(searchResultsSelector).prepend('<section id="products"><div id="js-product-list-top" /><div id="js-product-list" /><div id="js-product-list-bottom" /></section>');
+                $(searchResultsSelector).prepend('<section id="products"><div id="js-product-list-top"></div><div id="js-product-list"></div><div id="js-product-list-bottom"></div></section>');
             }
         }
 
         if ((typeof(responseText.remind_selection) != 'undefined' && (responseText.remind_selection == 3 || responseText.remind_selection == 1))) {
             // Check if #js-active-search-filters exists
-            if (withProduct && $('#js-active-search-filters').size() == 0 && $('#js-product-list-top').size() > 0) {
+            if (withProduct && $('#js-active-search-filters').length == 0 && $('#js-product-list-top').length > 0) {
                 // Add this missing div first
                 $('#js-product-list-top').parent().prepend('<div id="js-active-search-filters"></div>');
             }
         } else {
             $('#js-active-search-filters').remove();
         }
+
+        // Prevent scroll to the top from the default theme's updateProductList handler when we apply a new criterion
+        var currentTop = $(window).scrollTop();
+        prestashop.once('updateProductList', function () {
+            $(document).scrollTop(currentTop);
+        });
 
         prestashop.emit('updateProductList', responseText);
 
@@ -276,7 +282,7 @@ var as4Plugin = {
 
         // Hide selection reminder if empty
         $('.PM_ASSelectionsDropDown').each(function() {
-            if ($('li.PM_ASSelectionsSelectedCriterion', $(this)).size() == 0) {
+            if ($('li.PM_ASSelectionsSelectedCriterion', $(this)).length == 0) {
                 $(this).hide();
             }
         });
@@ -380,7 +386,7 @@ var as4Plugin = {
             $(document).ready(function() {
                 $('#selectPrductSort, #selectProductSort, .selectPrductSort').each(function() {
                     $('option[value^="sales:"]', this).remove();
-                    if ($('option[value^="sales:"]', this).size() == 0) {
+                    if ($('option[value^="sales:"]', this).length == 0) {
                         if (as4Plugin.getParamValue(id_search, 'orderBy') == 'sales') {
                             $('option:selected', this).removeAttr('selected').prop('selected', false);
                         }
@@ -402,11 +408,11 @@ var as4Plugin = {
     },
 
     getIdSearchFromItem: function(item) {
-        if ($(item).parents('.PM_ASBlockOutput').size() > 0) {
+        if ($(item).parents('.PM_ASBlockOutput').length > 0) {
             return $(item).parents('.PM_ASBlockOutput').data('id-search');
-        } else if ($(item).parents('#PM_ASearchResults').size() > 0) {
+        } else if ($(item).parents('#PM_ASearchResults').length > 0) {
             return $(item).parents('#PM_ASearchResults').data('id-search');
-        } else if ($(item).parents('[data-id-search]').size() > 0) {
+        } else if ($(item).parents('[data-id-search]').length > 0) {
             return $(item).parents('[data-id-search]').data('id-search');
         }
         return false;
@@ -451,7 +457,7 @@ var as4Plugin = {
         });
         // Hide selection reminder if empty (on load)
         $('.PM_ASSelectionsDropDown').each(function() {
-            if ($('li.PM_ASSelectionsSelectedCriterion', $(this)).size() == 0) {
+            if ($('li.PM_ASSelectionsSelectedCriterion', $(this)).length == 0) {
                 $(this).hide();
             }
         });
@@ -601,7 +607,7 @@ var as4Plugin = {
 
             var id_search = as4Plugin.getIdSearchFromItem(this);
             var e = $(this);
-            var hideState = $(e).parent('.PM_ASShowCriterionsGroupHidden').next('.PM_ASCriterionsGroupHidden:hidden').size();
+            var hideState = $(e).parent('.PM_ASShowCriterionsGroupHidden').next('.PM_ASCriterionsGroupHidden:hidden').length;
             $.ajax({
                 type: "GET",
                 url: ASSearchUrl,
@@ -688,7 +694,7 @@ var as4Plugin = {
             currentCategoryLevelItem = $('#PM_ASCriterionGroupSelect_' + id_search + '_' + id_criterion_group);
             currentSelectedCategory = $('option[value="' + id_criterion + '"]', currentCategoryLevelItem);
 
-            if (currentSelectedCategory.size() > 0 && currentSelectedCategory.prop('selected') == true) {
+            if (currentSelectedCategory.length > 0 && currentSelectedCategory.prop('selected') == true) {
                 // Category is already selected, we must unselect it
                 $('option:selected', currentCategoryLevelItem).prop('selected', false);
                 currentCategoryLevelItem.trigger('change');
@@ -728,7 +734,33 @@ var as4Plugin = {
         }
     },
 
-    removeOldEvents: function() {
+    handleFilterButtonEvent: function(id_search) {
+        // Open search engine filters when native "Filter" button is pressed
+        setTimeout(function () {
+            $('body').off('click', '#search_filter_toggler');
+            if (typeof (id_search) == 'undefined') {
+                $('body').on('click', '#search_filter_toggler', function () {
+                    if ($('.PM_ASBlockOutput:not(.PM_ASMobileVisible) .card-header').size() > 0) {
+                        searchBlock = $('.PM_ASBlockOutput:not(.PM_ASMobileVisible) .card-header');
+                        searchBlock.get(0).click();
+                        $('html, body').animate({
+                            scrollTop: searchBlock.offset().top
+                        }, 500);
+                    }
+                });
+            } else {
+                $('body').on('click', '#search_filter_toggler', function () {
+                    $('#PM_ASBlockOutput_' + id_search + ':not(.PM_ASMobileVisible) .card-header').click();
+                    $('html, body').animate({
+                        scrollTop: $('#PM_ASBlockOutput_' + id_search + ' .card-header').offset().top
+                    }, 500);
+                });
+            }
+        }, 200);
+    },
+
+    removeOldEvents: function(id_search) {
+        as4Plugin.handleFilterButtonEvent(id_search);
         $('body').off('change', '#search_filters select');
         $(document).off('change', '#search_filters select');
     },
@@ -736,7 +768,7 @@ var as4Plugin = {
     initSearchFromResults: function(id_search, search_method, step_search) {
         $(document).trigger('as4-Before-Init-Search-Results', [id_search, search_method, step_search]);
 
-        as4Plugin.removeOldEvents();
+        as4Plugin.removeOldEvents(id_search);
 
         $(document).trigger('as4-After-Init-Search-Results', [id_search, search_method, step_search]);
 
@@ -823,7 +855,7 @@ var as4Plugin = {
             $(this).find('.PM_ASCriterionGroupColor.color_to_pick_list li.PM_ASCriterionHide').css('display', 'none');
             $(this).find('.PM_ASCriterionGroupImage li.PM_ASCriterionHide').css('display', 'none');
         });
-        as4Plugin.removeOldEvents();
+        as4Plugin.removeOldEvents(id_search);
 
         // Submit search
         if (search_method == 2) {
@@ -869,9 +901,9 @@ var as4Plugin = {
     },
 
     moveFormContainerForSEOPages: function() {
-        if (typeof($('div#PM_ASFormContainerHidden')) != 'undefined' && $('div#PM_ASFormContainerHidden').size() > 0) {
+        if (typeof($('div#PM_ASFormContainerHidden')) != 'undefined' && $('div#PM_ASFormContainerHidden').length > 0) {
             var element_parent = $('div#PM_ASFormContainerHidden').parent().parent();
-            if (typeof(element_parent) != 'undefined' && $(element).size() > 0) {
+            if (typeof(element_parent) != 'undefined' && $(element).length > 0) {
                 var element = $('div#PM_ASFormContainerHidden').detach();
                 $(element_parent).append(element);
             }
@@ -879,11 +911,11 @@ var as4Plugin = {
     },
 
     searchResponseCallback: function(id_search) {
-        as4Plugin.removeOldEvents();
+        as4Plugin.removeOldEvents(id_search);
 
         $(document).trigger('as4-Before-Response-Callback');
         //Override button add to cart from results
-        if ($('#PM_ASearchResults').size() > 0) {
+        if ($('#PM_ASearchResults').length > 0) {
             if (typeof initAp4CartLink == 'function') {
                 initAp4CartLink();
             }
@@ -935,7 +967,8 @@ var as4Plugin = {
 
         $(document).ready(function() {
             // Init chosen items (select with filters)
-            $(".PM_ASBlockOutput select.chosen:visible, .PM_ASBlockOutput select.as4-select:visible").each(function() {
+            // On mobile, we don't specify the "visible" because we hide the filters on page load
+            $(".PM_ASBlockOutput select.chosen:visible, .PM_ASBlockOutput select.as4-select:visible, .PM_ASBlockOutput.PM_ASMobileMode select.as4-select").each(function() {
                 selectizePlugins = [];
                 if ($(this).prop('multiple')) {
                     selectizePlugins = ['remove_button'];

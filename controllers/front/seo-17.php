@@ -42,6 +42,9 @@ class pm_advancedsearch4seoModuleFrontController extends AdvancedSearchProductLi
         $this->setSEOTags();
         $this->setProductFilterList();
         $this->setSmartyVars();
+        if (!headers_sent()) {
+            header('Link: <' . $this->getCanonicalURL() . '>; rel="canonical"', true);
+        }
         if (Tools::getIsset('from-xhr')) {
             $this->doProductSearch('');
         } else {
@@ -60,7 +63,7 @@ class pm_advancedsearch4seoModuleFrontController extends AdvancedSearchProductLi
     protected function setSEOTags()
     {
         $this->idSeo = (int)Tools::getValue('id_seo');
-        $this->seoUrl = Tools::getValue('seo_url');
+        $this->seoUrl = strip_tags(Tools::getValue('seo_url'));
         $this->pageNb = (int)Tools::getValue('page', 1);
         if ($this->seoUrl && $this->idSeo) {
             $resultSeoUrl = AdvancedSearchSeoClass::getSeoSearchByIdSeo((int)$this->idSeo, (int)$this->context->language->id);
@@ -70,17 +73,26 @@ class pm_advancedsearch4seoModuleFrontController extends AdvancedSearchProductLi
             $this->seoPageInstance = new AdvancedSearchSeoClass($this->idSeo, $this->context->language->id);
             $this->idSearch = (int)$resultSeoUrl[0]['id_search'];
             $this->searchInstance = new AdvancedSearchClass((int)$this->idSearch, (int)$this->context->language->id);
+            if (!Validate::isLoadedObject($this->searchInstance)) {
+                Tools::redirect('404');
+            }
             if ($resultSeoUrl[0]['deleted']) {
-                header("Status: 301 Moved Permanently", false, 301);
+                if (!headers_sent()) {
+                    header("Status: 301 Moved Permanently", false, 301);
+                }
                 Tools::redirect('index');
             }
             if (!$this->searchInstance->active) {
-                header("Status: 307 Temporary Redirect", false, 307);
+                if (!headers_sent()) {
+                    header("Status: 307 Temporary Redirect", false, 307);
+                }
                 Tools::redirect('index');
             }
             $seoUrlCheck = current(explode('/', $this->seoUrl));
             if ($resultSeoUrl[0]['seo_url'] != $seoUrlCheck) {
-                header("Status: 301 Moved Permanently", false, 301);
+                if (!headers_sent()) {
+                    header("Status: 301 Moved Permanently", false, 301);
+                }
                 $this->redirectToSeoPageIndex();
                 die();
             }
@@ -98,7 +110,9 @@ class pm_advancedsearch4seoModuleFrontController extends AdvancedSearchProductLi
             }
             if ($hasPriceCriterionGroup && $resultSeoUrl[0]['id_currency'] && $this->context->cookie->id_currency != (int)$resultSeoUrl[0]['id_currency']) {
                 $this->context->cookie->id_currency = $resultSeoUrl[0]['id_currency'];
-                header('Refresh: 1; URL='.$_SERVER['REQUEST_URI']);
+                if (!headers_sent()) {
+                    header('Refresh: 1; URL='.$_SERVER['REQUEST_URI']);
+                }
                 die;
             }
             $criteria = unserialize($resultSeoUrl[0]['criteria']);
@@ -139,7 +153,7 @@ class pm_advancedsearch4seoModuleFrontController extends AdvancedSearchProductLi
         $productFilterListSource = Tools::getValue('productFilterListSource');
         if (in_array($productFilterListSource, As4SearchEngine::$validPageName)) {
             As4SearchEngine::$productFilterListSource = $productFilterListSource;
-            if ($productFilterListSource == 'search' || $productFilterListSource == 'jolisearch' || $productFilterListSource == 'module-ambjolisearch-jolisearch') {
+            if ($productFilterListSource == 'search' || $productFilterListSource == 'jolisearch' || $productFilterListSource == 'module-ambjolisearch-jolisearch' || $productFilterListSource = 'prestasearch') {
                 $productFilterListData = AdvancedSearchCoreClass::getDataUnserialized(Tools::getValue('productFilterListData'));
                 if ($productFilterListData !== false) {
                     As4SearchEngine::$productFilterListData = $productFilterListData;
@@ -193,7 +207,7 @@ class pm_advancedsearch4seoModuleFrontController extends AdvancedSearchProductLi
     }
     public function getCanonicalURL()
     {
-        return $this->context->link->getModuleLink('pm_advancedsearch4', 'seo', array('id_seo' => (int)$this->seoPageInstance->id, 'seo_url' => $this->seoPageInstance->seo_url), null, (int)$this->context->language->id);
+        return As4SearchEngine::generateURLFromCriterions($this->idSearch, $this->getSelectedCriterions());
     }
     public function getListingLabel()
     {

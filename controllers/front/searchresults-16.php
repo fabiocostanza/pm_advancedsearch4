@@ -36,11 +36,12 @@ class pm_advancedsearch4searchresultsModuleFrontController extends ModuleFrontCo
         $this->searchInstance = new AdvancedSearchClass((int)$this->idSearch, (int)$this->context->cookie->id_lang);
         if (!Validate::isLoadedObject($this->searchInstance)) {
             Tools::redirect('404');
-        } else {
-            if (!$this->searchInstance->active) {
+        }
+        if (!$this->searchInstance->active) {
+            if (!headers_sent()) {
                 header("Status: 307 Temporary Redirect", false, 307);
-                Tools::redirect('index');
             }
+            Tools::redirect('index');
         }
         $this->currentIdCategory = As4SearchEngine::getCurrentCategory();
         $this->currentIdManufacturer = As4SearchEngine::getCurrentManufacturer();
@@ -62,7 +63,7 @@ class pm_advancedsearch4searchresultsModuleFrontController extends ModuleFrontCo
     }
     protected function setCriterions()
     {
-        $searchQuery = trim(Tools::getValue('as4_sq'));
+        $searchQuery = trim(strip_tags(Tools::getValue('as4_sq')));
         if (!empty($searchQuery)) {
             $this->criterionsList = As4SearchEngine::getCriterionsFromURL($this->idSearch, $searchQuery);
             if ($this->searchInstance->filter_by_emplacement) {
