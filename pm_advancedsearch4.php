@@ -3381,8 +3381,9 @@ class PM_AdvancedSearch4 extends Core implements PrestaShop\PrestaShop\Core\Modu
                     Product::sqlStock('product_shop', 0) : '') . '
                 WHERE c.`id_category` > 0'
                     .($active ? ' AND product_shop.`active` = 1' : '')
-                    .($front ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '')
+                    .(($front and !$schemas) ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '')
                     .($idSupplier ? ' AND p.id_supplier = '.(int)$idSupplier : '')
+                    . (($front AND $schemas) ? ' AND p.`reference` LIKE "%SPL%"' : ' AND p.`reference` NOT LIKE "%SPL%"') // MOD
                     .' GROUP BY cp.`id_product`';
         if ($random === true) {
             $sql .= ' ORDER BY RAND() LIMIT '.(int)$randomNumberProducts;

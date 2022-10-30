@@ -41,6 +41,13 @@ class pm_advancedsearch4searchresultsModuleFrontController extends AdvancedSearc
             $this->module = Module::getInstanceByName(_PM_AS_MODULE_NAME_);
         }
         parent::init();
+
+        if(Tools::getIsset('show_schemas') AND Tools::getValue('show_schemas')) {
+            $this->context->cookie->schemas = true;
+        } elseif(Tools::getIsset('show_products') AND Tools::getValue('show_products')) {
+            $this->context->cookie->schemas = false;
+        }
+
         $this->php_self = 'module-' . _PM_AS_MODULE_NAME_ . '-searchresults';
         if (!headers_sent()) {
             header('X-Robots-Tag: noindex', true);
@@ -169,6 +176,9 @@ class pm_advancedsearch4searchresultsModuleFrontController extends AdvancedSearc
             $this->currentCategoryObject,
             $this->currentCategoryObject->id_image
         );
+        if(isset($this->context->cookie) and isset($this->context->cookie->schemas) and $this->context->cookie->schemas) {
+            $category['schemas'] = $this->context->cookie->schemas;
+        }
         return $category;
     }
     protected function getTemplateVarSubCategories()

@@ -603,6 +603,12 @@ abstract class SearchEngineUtils
         if (!$id_currency) {
             $id_currency = $context->currency->id;
         }
+        // MOD
+        $schemas = false;
+        if (isset($context->cookie) AND isset($context->cookie->schemas) AND $context->cookie->schemas) {
+            $schemas = $context->cookie->schemas;
+        }
+        // /MOD
         $join_criterion_tables = array();
         $join_criterion = array();
         $setVariables = array();
@@ -646,7 +652,7 @@ abstract class SearchEngineUtils
         }
         $table_stock_index = 0;
         $idSelectedCriteria = implode('-', self::arrayValuesRecursive($selected_criterion));
-        $cacheKey = sha1($fromMethod.$search['id_search'].$idSelectedCriteria.'-'.implode('-', array_keys($selected_criterion)).'-'.(int)$current_id_criterion_group.(int)$include_price_table.(int)$include_product_table.(int)$id_lang.(int)$is_attribute_group.(int)$group_type.(int)$strict_stock);
+        $cacheKey = sha1($fromMethod.$search['id_search'].$idSelectedCriteria.'-'.implode('-', array_keys($selected_criterion)).'-'.(int)$current_id_criterion_group.(int)$include_price_table.(int)$include_product_table.(int)$id_lang.(int)$is_attribute_group.(int)$group_type.(int)$strict_stock.(int)$schemas);
         if (isset(self::$makeLeftJoinWhereCriterionCache[$cacheKey])) {
             return self::$makeLeftJoinWhereCriterionCache[$cacheKey];
         }
@@ -984,6 +990,12 @@ abstract class SearchEngineUtils
         }
         if ($include_product_table || $fromMethod == 'getCriterionsForSearchBloc') {
             $where_criterion[] = 'ps.`active` = 1';
+            if($schemas){
+                $where_criterion[] = 'p.`reference` LIKE "%SPL%"';
+            } else {
+                $where_criterion[] = 'ps.`visibility` IN ("both", "search")';
+            }
+
             if (in_array(SearchEngineUtils::$productFilterListSource, SearchEngineUtils::$productFilterListSearchSource)) {
                 $where_criterion[] = 'ps.`visibility` IN ("both", "search")';
             } else {
@@ -1049,7 +1061,12 @@ abstract class SearchEngineUtils
     public static function getCriterionsForSearchBloc($search, $id_criterion_group, $selected_criterion = array(), $selected_criteria_groups_type = array(), $visible = false, $groupInfos = false, $criterion_groups = array())
     {
         $cacheKey = func_get_args();
-        $customCacheKey = 'pm_advancedsearch|' . (int)$search['id_search'] . '|customCache|getCriterionsForSearchBloc|' . (int)$id_criterion_group . '|' . sha1(serialize($cacheKey));
+        $schemas = false;
+        if (isset($context->cookie) AND isset($context->cookie->schemas) and $context->cookie->schemas) {
+            $schemas = $context->cookie->schemas;
+        }
+        $customCacheKey = 'pm_advancedsearch|' . (int)$search['id_search'] . '|customCache|getCriterionsForSearchBloc|' . (int)$id_criterion_group . '|' .(int)$schemas . '|' . sha1(serialize($cacheKey));
+
         $resultFromSmartyCache = pm_advancedsearch4::getModuleInstance()->getFromSmartyCache($customCacheKey);
         if ($resultFromSmartyCache !== null) {
             return $resultFromSmartyCache;
@@ -1190,6 +1207,10 @@ abstract class SearchEngineUtils
                 }
                 $countColumn = 'COUNT(spa_cache.`id_product_attribute`) - COUNT(DISTINCT spa_cache.`id_product`) + ' . $countColumn;
             }
+        }
+        if($schemas) {
+            $leftJoinWhereCriterion['join'][] = 'LEFT JOIN `' . _DB_PREFIX_ . 'product` p ON (p.`id_product` = acp.`id_product`)';
+            $leftJoinWhereCriterion['where'][] = ' p.`reference` LIKE "%SPL%"';
         }
         $leftJoinWhereCriterion['setVariables']['acListCriterionsForSearchBloc'] = 'SELECT GROUP_CONCAT(DISTINCT aclist.`id_criterion_parent`) AS `concatened_id_criterion_list`
             FROM `'._DB_PREFIX_.'pm_advancedsearch_criterion_'.(int) $search['id_search'].'` ac
@@ -1827,6 +1848,15 @@ abstract class SearchEngineUtils
         if (Core::isFilledArray($leftJoinWhereCriterion['where'])) {
             $sql .= ' WHERE ' . implode("\n AND ", $leftJoinWhereCriterion['where']);
         }
+        
+        // MOD
+        $schemas = false;
+        if (isset($context->cookie) AND isset($context->cookie->schemas) and $context->cookie->schemas) {
+            $schemas = $context->cookie->schemas;
+        }
+        $sql .= ($schemas) ? ' AND p.`reference` LIKE "%SPL%"' : '';
+        // /MOD
+
         $sql .= ' GROUP BY ps.`id_product`';
         if ($orderBy == 'position' && isset($id_category) && $id_category) {
             $sql .= ' ORDER BY IFNULL(cp_custom.`position`, cp.`position`) '.pSQL($orderWay);
