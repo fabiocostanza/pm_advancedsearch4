@@ -1,8 +1,8 @@
 {if $criterions_groups_indexed|is_array && $criterions_groups_indexed|sizeof}
     {if !empty($currentSeo->id)}
-        {module->_displayTitle text="{l s='Edit results page' mod='pm_advancedsearch4'}"}
+        {module->displayTitle text="{l s='Edit facet (SEO page)' mod='pm_advancedsearch4'}"}
     {else}
-        {module->_displayTitle text="{l s='Add results page' mod='pm_advancedsearch4'}"}
+        {module->displayTitle text="{l s='Add a new facet (SEO page)' mod='pm_advancedsearch4'}"}
     {/if}
     {as4_startForm id="seoSearchForm" obj=$params.obj params=$params}
 
@@ -28,10 +28,10 @@
                     {/foreach}
                 {* Price group *}
                 {elseif $criterions_group_indexed.criterion_group_type == 'price'}
-                    <li 
-                    class="ui-state-default seoSearchCriterionSortable seoSearchCriterionPriceSortable" 
-                    id="criterion_{$criterions_group_indexed.id_criterion_group|intval}_{$criterions_group_indexed.price_range.min_price|floatval}~{$criterions_group_indexed.price_range.max_price|floatval}" 
-                    title="{l s='From' mod='pm_advancedsearch4'} {$criterions_group_indexed.price_range.min_price|intval} {l s='to' mod='pm_advancedsearch4'} {$default_currency_sign_left|escape:'htmlall':'UTF-8'} {$criterions_group_indexed.price_range.max_price|intval} {$default_currency_sign_right|escape:'htmlall':'UTF-8'}" 
+                    <li
+                    class="ui-state-default seoSearchCriterionSortable seoSearchCriterionPriceSortable"
+                    id="criterion_{$criterions_group_indexed.id_criterion_group|intval}_{$criterions_group_indexed.price_range.min_price|floatval}~{$criterions_group_indexed.price_range.max_price|floatval}"
+                    title="{l s='From' mod='pm_advancedsearch4'} {$criterions_group_indexed.price_range.min_price|intval} {l s='to' mod='pm_advancedsearch4'} {$default_currency_sign_left|escape:'htmlall':'UTF-8'} {$criterions_group_indexed.price_range.max_price|intval} {$default_currency_sign_right|escape:'htmlall':'UTF-8'}"
                     style="width:50%"
                     >
                         {l s='Define price range:' mod='pm_advancedsearch4'}<br />
@@ -39,7 +39,7 @@
                         <span id="PM_ASPriceRangeValue">
                             {$criterions_group_indexed.price_range.min_price|intval} - {$default_currency_sign_left|escape:'htmlall':'UTF-8'} {$criterions_group_indexed.price_range.max_price|intval} {$default_currency_sign_right|escape:'htmlall':'UTF-8'}
                         </span>
-                        <select id="id_currency" name="id_currency" style="float:left;margin-left:10px;width:50px;">
+                        <select id="id_currency" name="id_currency" style="float:left;margin-left:10px;width:50px;height:auto;{if sizeof($currencies) == 1}display:none;{/if}">
                         {foreach from=$currencies item=currency}
                             <option value="{$currency.id_currency|intval}"{if $default_currency_id == $currency.id_currency} selected="selected"{/if}>{$currency.sign|escape:'htmlall':'UTF-8'}</option>
                         {/foreach}
@@ -49,9 +49,9 @@
                             $(document).on('change', '#id_currency', function() {
                                 var id_currency = $(this).val();
                                 $.ajax({
-                                    type : "GET",
-                                    url : "{$base_config_url|as4_nofilter}&pm_load_function=displaySeoPriceSlider&id_search={$criterions_group_indexed.id_search|intval}&id_criterion_group_linked={$criterions_group_indexed.id_criterion_group_linked|intval}&id_criterion_group={$criterions_group_indexed.id_criterion_group|intval}&id_currency=" + id_currency,
-                                    dataType : "script"
+                                    method: "POST",
+                                    url: "{$base_config_url|as4_nofilter}&pm_load_function=displaySeoPriceSlider&id_search={$criterions_group_indexed.id_search|intval}&id_criterion_group_linked={$criterions_group_indexed.id_criterion_group_linked|intval}&id_criterion_group={$criterions_group_indexed.id_criterion_group|intval}&id_currency=" + id_currency,
+                                    dataType: "script"
                                 });
                             });
                             $("#PM_ASSeoPriceRange").slider({
@@ -69,10 +69,10 @@
                     </li>
                 {* Slider group *}
                 {elseif $criterions_group_indexed.display_type == 5 || $criterions_group_indexed.display_type == 8}
-                    <li 
-                    class="ui-state-default seoSearchCriterionSortable seoSearchCriterionRangeSortable{$criterions_group_indexed.id_criterion_group|intval}" 
-                    id="criterion_{$criterions_group_indexed.id_criterion_group|intval}_{$criterions_group_indexed.range.min|floatval}~{$criterions_group_indexed.range.max|floatval}" 
-                    title="{l s='From' mod='pm_advancedsearch4'} {$criterions_group_indexed.range.min|intval} {l s='to' mod='pm_advancedsearch4'} {$criterions_group_indexed.range.max|intval} ({$criterions_group_indexed.range_sign|escape:'htmlall':'UTF-8'})" 
+                    <li
+                    class="ui-state-default seoSearchCriterionSortable seoSearchCriterionRangeSortable{$criterions_group_indexed.id_criterion_group|intval}"
+                    id="criterion_{$criterions_group_indexed.id_criterion_group|intval}_{$criterions_group_indexed.range.min|floatval}~{$criterions_group_indexed.range.max|floatval}"
+                    title="{l s='From' mod='pm_advancedsearch4'} {$criterions_group_indexed.range.min|intval} {l s='to' mod='pm_advancedsearch4'} {$criterions_group_indexed.range.max|intval} ({$criterions_group_indexed.range_sign|escape:'htmlall':'UTF-8'})"
                     style="width:50%"
                     >
                         {l s='Define range:' mod='pm_advancedsearch4'}<br />
@@ -104,7 +104,7 @@
             </div>
         {/foreach}
     </div>
-    {module->_showInfo text="{l s='Add the criteria of your choice using drag & drop to generate predefined searches.' mod='pm_advancedsearch4'}<br /><br />{l s='You can sort them and automaticaly generate friendly title, meta and URL.' mod='pm_advancedsearch4'}"}
+    {module->showInfo text="{l s='Add the criteria of your choice using drag & drop to generate predefined searches.' mod='pm_advancedsearch4'}<br /><br />{l s='You can sort them and automaticaly generate friendly title, meta and URL.' mod='pm_advancedsearch4'}"}
     <div id="nbProductsCombinationSeoSearchForm"></div>
     <div id="seoSearchPanelCriteriaSelected">
         <div class="ui-widget-content" style="padding:10px;">
@@ -150,7 +150,7 @@
                 }
             }).sortable({
                 items: "li:not(.placeholder)",
-                placeholder: "ui-state-highlight seoSearchCriterionSortable",
+                placeholder: "seoSearchCriterionSortable",
                 sort: function() {
                     $(this).removeClass("ui-state-default");
                 },
@@ -162,17 +162,18 @@
         });
     </script>
 
-    {as4_button text={l s='Generate title, meta and URL' mod='pm_advancedsearch4'} onclick='fillSeoFields();' icon_class='ui-icon ui-icon-refresh'}
+    {as4_button text={l s='Generate title, meta and URL' mod='pm_advancedsearch4'} onclick='fillSeoFields();' icon_class='sync' class="col-sm-offset-4 offset-sm-4"}
     <br /><br />
-    
+
     {include file='../../core/clear.tpl'}
-    {as4_inputTextLang obj=$params.obj key='meta_title' label={l s='Meta title' mod='pm_advancedsearch4'} size='350px'}
-    {as4_inputTextLang obj=$params.obj key='meta_description' label={l s='Meta description' mod='pm_advancedsearch4'} size='350px'}
+    {as4_inputTextLang obj=$params.obj key='meta_title' label={l s='Meta title' mod='pm_advancedsearch4'} size='350px' required=true}
+    {as4_inputTextLang obj=$params.obj key='meta_description' label={l s='Meta description' mod='pm_advancedsearch4'} size='350px' required=true}
     {as4_inputTextLang obj=$params.obj key='meta_keywords' label={l s='Meta keywords' mod='pm_advancedsearch4'} size='350px'}
-    {as4_inputTextLang obj=$params.obj key='title' label={l s='Title (H1)' mod='pm_advancedsearch4'} size='350px'}
-    {as4_inputTextLang obj=$params.obj key='seo_url' label={l s='Friendly URL' mod='pm_advancedsearch4'} size='350px' onkeyup='ASStr2url(this);' onchange='ASStr2url(this);'}
+    {as4_inputTextLang obj=$params.obj key='title' label={l s='Title (H1)' mod='pm_advancedsearch4'} size='350px' required=true}
+    {as4_inputTextLang obj=$params.obj key='seo_url' label={l s='Friendly URL' mod='pm_advancedsearch4'} size='350px' onkeyup='ASStr2url(this);' onchange='ASStr2url(this);' required=true}
     {as4_richTextareaLang obj=$params.obj key='description' label={l s='Description (visible on the top of the page)' mod='pm_advancedsearch4'}}
-    {as4_ajaxSelectMultiple selectedoptions=$cross_links_selected key='cross_links' label={l s='Results pages to link to this page (cross-linking)' mod='pm_advancedsearch4'} remoteurl="{$base_config_url|as4_nofilter}&pm_load_function=displaySeoSearchOptions&id_seo_origin={$params.obj->id}"}
+    {as4_richTextareaLang obj=$params.obj key='footer_description' label={l s='Footer description (visible on the bottom of the product list)' mod='pm_advancedsearch4'}}
+    {as4_ajaxSelectMultiple selectedoptions=$cross_links_selected key='cross_links' label={l s='SEO pages to be linked to this page (cross-linking)' mod='pm_advancedsearch4'} remoteurl="{$base_config_url|as4_nofilter}&pm_load_function=displaySeoSearchOptions&id_seo_origin={$params.obj->id}"}
 
     <input type="hidden" name="criteria" id="seoSearchCriteriaInput" />
     <input type="hidden" name="id_search" id="id_search" value="{$id_search|intval}" />
@@ -188,13 +189,13 @@
     <br class="clear" /><br />
 
     <center>
-        <p class="ui-state-error ui-corner-all" id="errorCombinationSeoSearchForm" style="display:none;padding:10px;">
+        <p class="alert alert-danger" id="errorCombinationSeoSearchForm" style="display:none;">
             <strong>{l s='Your criteria combination led to no result, please reorder them before submiting' mod='pm_advancedsearch4'}</strong>
         </p>
     </center>
 
-    {module->_displaySubmit text="{l s='Save' mod='pm_advancedsearch4'}" name="submitSeoSearchForm"}
+    {module->displaySubmit text="{l s='Save' d='Admin.Actions'}" name="submitSeoSearchForm"}
     {as4_endForm id="seoSearchForm"}
 {else}
-    {module->_showInfo text="{l s='Before adding a new page, please add criteria groups to your search engine'}"}
+    {module->showInfo text="{l s='Before adding a new page, please add criteria groups to your search engine'}"}
 {/if}

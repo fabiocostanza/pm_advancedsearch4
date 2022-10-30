@@ -1,6 +1,5 @@
 {***********
 Checkbox
-{l s='Yes' mod='pm_advancedsearch4'}
 ************}
 
 {if $criterions_group.display_type eq 4}

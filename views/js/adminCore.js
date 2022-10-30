@@ -57,7 +57,7 @@ function initUploader(inputName, destinationUrl, allowedExtensionList, isImage, 
             PostInit: function() { },
             FilesAdded: function(up, files) {
                 plupload.each(files, function(file) {
-                    $("input[type=submit].ui-state-default").attr("disabled", "disabled").removeClass("ui-state-default").addClass("ui-state-disabled");
+                    $("input[type=submit].ui-state-default").prop("disabled", true).removeClass("ui-state-default").addClass("ui-state-disabled");
                     document.getElementById(inputName + '_filelist').innerHTML += '<div id="' + file.id + '">' + file.name + ' (' + plupload.formatSize(file.size) + ') <b></b></div>';
                     uploader.start();
                 });
@@ -70,13 +70,13 @@ function initUploader(inputName, destinationUrl, allowedExtensionList, isImage, 
                 $('#' + inputName).val(responseJson.filename);
                 $('#' + inputName + '_file').remove();
                 if (isImage) {
-                    $('#preview-' + inputName).prepend('<img src="' + _modulePath + 'uploads/temp/' + responseJson.filename + '" id="' + inputName + '_file" />');
+                    $('#preview-' + inputName).prepend('<img src="' + modulePath + 'uploads/temp/' + responseJson.filename + '" id="' + inputName + '_file" />');
                 } else {
-                    $('#preview-' + inputName).prepend('<a href="' + _modulePath + 'uploads/temp/' + responseJson.filename + '" target="_blank" class="pm_view_file_upload_link" id="' + inputName + '_file">' + pm_viewFileLabel + '</a>');
+                    $('#preview-' + inputName).prepend('<a href="' + modulePath + 'uploads/temp/' + responseJson.filename + '" target="_blank" class="pm_view_file_upload_link" id="' + inputName + '_file">' + pm_viewFileLabel + '</a>');
                 }
-                $("input[name=" + inputName + "_unlink_lang]").attr("checked","").removeAttr("checked");
+                $("input[name=" + inputName + "_unlink_lang]").prop('checked', false);
                 $("#preview-" + inputName).slideDown("fast");
-                $("input[type=submit].ui-state-disabled").removeAttr("disabled").removeClass("ui-state-disabled").addClass("ui-state-default");
+                $("input[type=submit].ui-state-disabled").prop("disabled", false).removeClass("ui-state-disabled").addClass("ui-state-default");
                 document.getElementById(inputName + '_filelist').innerHTML = '';
                 if (typeof(callBack) == 'function') {
                     callBack(responseJson.filename);
@@ -199,7 +199,7 @@ function hideNext(e) {
     $(e).parent('.margin-form').next('div').slideUp('fast');
 }
 function showSpanIfChecked(e, idToShow) {
-    var val = $(e).attr('checked');
+    var val = $(e).prop('checked');
     if (val) {
         $(idToShow).css('display', 'inline');
     } else {
@@ -218,9 +218,16 @@ function openDialogIframe(url,dialogWidth,dialogHeight,fitScreenHeight) {
     });
 }
 function closeDialogIframe() {
-    // Remove spinner as the iframe is not deleted, but hidden
-    $('.dialogIFrame').contents().find(".as4-loader-bo").remove();
+    removeIframeAnimations();
     $(dialogIframe).dialog("close");
+}
+function removeIframeAnimations() {
+    if ($('.dialogIFrame:visible').length) {
+        // Remove spinner as the iframe is not deleted, but hidden
+        $('.dialogIFrame').contents().find(".as4-loader-bo").remove();
+        // Remove the blur effect as well, if any
+        $('.dialogIFrame').contents().find('form[target="dialogIframePostForm"]').css('filter', '');
+    }
 }
 
 var dialogInline;
@@ -241,7 +248,7 @@ function closeDialogInline() {
 }
 function reloadPanel(idPanel) {
     var url = $('#'+idPanel).attr('rel');
-    if(!url) show_info('Attribute rel is not set for panel '+idPanel);
+    if(!url) show_error('Attribute rel is not set for panel '+idPanel);
     $('#'+idPanel).load(url);
 }
 function loadPanel(idPanel,url) {
@@ -259,10 +266,13 @@ function loadTabPanel(tabPanelId,li,ul) {
     } );
 }
 function show_info(content) {
-    $.jGrowl(content,{ themeState: 'ui-state-highlight' });
+    $.jGrowl(content, { themeState: 'custom-alert alert-info' });
+}
+function show_success(content) {
+    $.jGrowl(content, { themeState: 'custom-alert alert-success' });
 }
 function show_error(content) {
-    $.jGrowl(content,{ sticky: true, themeState: 'ui-state-error' });
+    $.jGrowl(content, { sticky: true, themeState: 'custom-alert alert-danger' });
 }
 function objectToarray (o,e) {
     a = new Array;
@@ -273,10 +283,6 @@ function objectToarray (o,e) {
 }
 
 $.fn.extend({
-    pm_selectMenu: function() {
-        $(this).chosen({ disable_search: true, max_selected_options: 1, inherit_select_classes: true });
-        $(this).trigger('chosen:updated');
-    },
     pm_ajaxScriptLoad: function(event) {
         if($(this).hasClass('pm_confirm') && !confirm($("<textarea />").html($(this).attr('title')).val())) {
             event.preventDefault();
@@ -316,9 +322,9 @@ $.fn.extend({
             return false;
         }
         $.ajax( {
-            type : "GET",
-            url : $(this).attr('href'),
-            dataType : "script",
+            method: "POST",
+            url: $(this).attr('href'),
+            dataType: "script",
             error: function(XMLHttpRequest, textStatus, errorThrown) {
                 //alert(msgAjaxError);
             }
@@ -402,12 +408,12 @@ function initMakeGradient() {
 }
 function checkChildrenCheckbox(e) {
     if($(e).children('input[type=checkbox]:checked').length)
-        $(e).children('input[type=checkbox]').removeAttr('checked');
+        $(e).children('input[type=checkbox]').prop('checked', false);
     else
-        $(e).children('input[type=checkbox]').attr('checked','checked');
+        $(e).children('input[type=checkbox]').prop('checked', true);
 }
 function unCheckAllChildrenCheckbox(e) {
-    $(e).find('input[type=checkbox]').removeAttr('checked');
+    $(e).find('input[type=checkbox]').prop('checked', false);
 }
 function display(message) {
     $.jGrowl(message, { sticky: true, themeState: 'ui-state-highlight'  });
@@ -420,22 +426,19 @@ function displayGroupBoxFromPermissions(id) {
         $('#blc_groupBox').slideDown("fast");
     else $('#blc_groupBox').slideUp("fast");
 }
-function initTips(e) {
-    $(document).ready(function() {
-        $(e+"-tips").tipTip();
-    });
-}
 $(document).ready(function() {
     // Add class if we are into an iframe context
     if (window != window.parent) {
-        $('body').addClass('pm_iframe');
+        $('body').addClass('pm_iframe bootstrap');
     }
     loadAjaxLink();
-    $(".pm_tips").tipTip();
     $('link[href$="js/jquery/datepicker/datepicker.css"]').remove();
     $('div#addons-rating-container p.dismiss a').click(function() {
         $('div#addons-rating-container').hide(500);
-        $.ajax({type : "GET", url : window.location+'&dismissRating=1' });
+        $.ajax({
+            method: "POST",
+            url: window.location+'&dismissRating=1'
+        });
         return false;
     });
 });

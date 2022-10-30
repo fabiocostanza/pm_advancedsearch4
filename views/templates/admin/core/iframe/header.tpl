@@ -4,6 +4,11 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title>PrestaShop</title>
         {$inline|as4_nofilter}
-        {$assets|implode:''|as4_nofilter}
+        {foreach from=$assets.css item=css}
+            <link href="{$css.uri}" rel="stylesheet" type="text/css" media="{$css.media}" />
+        {/foreach}
+        {foreach from=$assets.js item=js}
+            <script type="text/javascript" src="{$js.uri}"></script>
+        {/foreach}
     </head>
     <body style="background:#ffffff;" class="pm_bo_ps_{$ps_version|escape:'htmlall':'UTF-8'} pm_bo_ps_{$ps_version_full|escape:'htmlall':'UTF-8'}">

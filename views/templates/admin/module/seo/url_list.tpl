@@ -1,9 +1,9 @@
-{module->_displayTitle text="{l s='URL list' mod='pm_advancedsearch4'}"}
+{module->displayTitle text="{l s='URL list' mod='pm_advancedsearch4'}"}
 
 {if $seo_url_list|is_array && $seo_url_list|sizeof}
     {as4_startForm id="SEOURLListForm"}
 
-    {module->_showInfo text="{l s='You will find here the list of all the predefined results pages URLs you have created for this search engine. You can use them in your menu, slideshow, footer, blocks, or anywhere you want in your website for Google crawling' mod='pm_advancedsearch4'}"}
+    {module->showInfo text="{l s='Here you will find the list of URLs of all SEO pages (facets) associated with this search engine. You can add these URLs in your menu, slideshows, footer or blocks so that Google can index them more easily.' mod='pm_advancedsearch4'}"}
     <p>{l s='Please select the language:' mod='pm_advancedsearch4'}</p>
     {$pm_flags|as4_nofilter}
     {include file='../../core/clear.tpl'}
@@ -31,5 +31,5 @@
 
     {as4_startForm id="SEOURLListForm"}
 {else}
-    {module->_showInfo text="{l s='No URL yet' mod='pm_advancedsearch4'}"}
+    {module->showInfo text="{l s='No URL yet' mod='pm_advancedsearch4'}"}
 {/if}

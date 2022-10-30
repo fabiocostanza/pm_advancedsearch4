@@ -1,6 +1,6 @@
 /**
  *
- * Advanced Search 4
+ * Advanced Search 5 Pro
  *
  * @author Presta-Module.com <support@presta-module.com>
  * @copyright Presta-Module
@@ -17,8 +17,6 @@
 /*
 $(document).on('as4-Before-Init-Search-Block', function(e, idSearch, searchMethod, stepSearch) {});
 $(document).on('as4-After-Init-Search-Block', function(e, idSearch, searchMethod, stepSearch) {});
-$(document).on('as4-Before-Init-Search-Results', function(e, idSearch, searchMethod, stepSearch) {});
-$(document).on('as4-After-Init-Search-Results', function(e, idSearch, searchMethod, stepSearch) {});
 $(document).on('as4-Criterion-Change', function(e, idSearch, idCriterionGroup, idCriterion, criterionName, groupType) {});
 $(document).on('as4-Before-Response-Callback', function(e) {});
 $(document).on('as4-After-Response-Callback', function(e) {});
@@ -158,10 +156,10 @@ $(document).on('as4-Criterion-Group-Skip', function(e, idSearch, idCriterionGrou
     });
 })(jQuery, window);
 
-window.onload = function () {
+window.addEventListener('load', function () {
     // Fix Safari issue that is firing onpopstate on page load (instead of all other browsers)
     setTimeout(function() {
-        window.onpopstate = function(event) {
+        window.addEventListener('popstate', function (event) {
             if (typeof(event.state) != 'undefined' && event.state != null && typeof(event.state.id_search) != 'undefined' && !isNaN(event.state.id_search)) {
                 if (typeof(event.state.stateFromInit) != 'undefined' && event.state.stateFromInit && as4Plugin.isSafari()) {
                     if (!isNaN(as4Plugin.previousOnPopState) && as4Plugin.previousOnPopState != null && as4Plugin.previousOnPopState > 0) {
@@ -196,9 +194,9 @@ window.onload = function () {
                     }
                 }
             }
-        };
+        });
     }, 500);
-};
+});
 
 $(document).on('as4-After-Init-Search-Block', function(e, idSearch, searchMethod, stepSearch) {
     // Let's save form state after search engine init, only if it's not coming from a back/forward browser event

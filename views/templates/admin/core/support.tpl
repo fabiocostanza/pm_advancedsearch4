@@ -1,13 +1,9 @@
-<div class="pm_footer_container ui-corner-all ui-tabs ui-tabs-panel">
+<div class="pm_footer_container">
     <div id="pm_support_informations" class="pm_panel_bottom">
         {include file='./title.tpl' text={l s='Useful links' mod='pm_advancedsearch4'}}
 
         <ul class="pm_links_block">
             <li class="pm_module_version"><strong>{l s='Module Version: ' mod='pm_advancedsearch4'}</strong> {$pm_module_version|escape:'htmlall':'UTF-8'}</li>
-
-        {if (isset($getting_started) && $getting_started)}
-            <li class="pm_get_started_link"><a href="javascript:;" class="pm_link">{l s='Getting started' mod='pm_advancedsearch4'}</a></li>
-        {/if}
 
         {if isset($support_links) && $support_links|is_array && $support_links|sizeof}
             {foreach from=$support_links item=support_link}
@@ -29,21 +25,7 @@
             </div>
         {/if}
     </div>
-
-    {if isset($get_started_image_list) && $get_started_image_list|is_array && $get_started_image_list|sizeof}
-        <script type="text/javascript">
-            $('.pm_get_started_link a').click(function() {
-                $.fancybox([ {$get_started_image_list|implode:','} ], {
-                    'padding'           : 0,
-                    'transitionIn'      : 'none',
-                    'transitionOut'     : 'none',
-                    'type'              : 'image',
-                    'changeFade'        : 0
-                });
-            });
-        </script>
-    {/if}
 </div>
-<div class="pm_footer_container ui-corner-all ui-tabs ui-tabs-panel">
+<div class="pm_footer_container">
     {include file="./cs-addons.tpl"}
 </div>

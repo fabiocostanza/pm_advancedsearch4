@@ -1,1 +1,1 @@
-{$serialized_data nofilter}
+{$serialized_data nofilter}{* HTML *}

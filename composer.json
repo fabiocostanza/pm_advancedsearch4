@@ -1,0 +1,20 @@
+{
+    "name": "prestamodule/pm_advancedsearch4",
+    "description": "Multi-layered search engine and search by steps",
+    "license": "see file: LICENSE.txt",
+    "authors": [{
+        "name": "Presta-Module.com",
+        "email": "support@presta-module.com"
+    }],
+    "autoload": {
+        "psr-4": {
+            "AdvancedSearch\\": "classes/"
+        },
+        "exclude-from-classmap": []
+    },
+    "config": {
+        "preferred-install": "dist",
+        "prepend-autoloader": false
+    },
+    "type": "prestashop-module"
+}

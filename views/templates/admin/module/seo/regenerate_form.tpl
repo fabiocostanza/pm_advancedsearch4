@@ -1,7 +1,7 @@
 {as4_startForm id="seoRegenerateForm"}
 
-{module->_displayTitle text="{l s='Regenerate SEO metas' mod='pm_advancedsearch4'}"}
-{module->_showInfo text="{l s='Select the type of data you want to regenerate, then click on “Regenerate“ button' mod='pm_advancedsearch4'}"}
+{module->displayTitle text="{l s='Regenerate SEO metas' mod='pm_advancedsearch4'}"}
+{module->showInfo text="{l s='Select the type of data you want to regenerate, then click on “Regenerate“ button' mod='pm_advancedsearch4'}"}
 
 <input type="hidden" name="id_search" id="id_search" value="{$id_search|intval}" />
 <div id="buttonSetSeoRegenerate">
@@ -14,7 +14,7 @@
 
 {include file='../../core/clear.tpl'}
 <br />
-{module->_displaySubmit text="{l s='Regenerate' mod='pm_advancedsearch4'}" name="submitSeoRegenerate"}
+{module->displaySubmit text="{l s='Regenerate' mod='pm_advancedsearch4'}" name="submitSeoRegenerate"}
 
 <script type="text/javascript">
     $(document).ready(function(){

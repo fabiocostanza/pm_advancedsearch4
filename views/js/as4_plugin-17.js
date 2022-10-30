@@ -1,6 +1,6 @@
 /**
  *
- * Advanced Search 4
+ * Advanced Search 5 Pro
  *
  * @author Presta-Module.com <support@presta-module.com>
  * @copyright Presta-Module
@@ -53,7 +53,7 @@ var as4Plugin = {
 
     // Get params var
     getParamValue: function(idSearch, varName) {
-        if (typeof(as4Plugin.params[idSearch][varName]) != 'undefined') {
+        if (typeof (as4Plugin.params) != 'undefined' && typeof (as4Plugin.params[idSearch]) != 'undefined' && typeof(as4Plugin.params[idSearch][varName]) != 'undefined') {
             return as4Plugin.params[idSearch][varName];
         }
         return false;
@@ -104,7 +104,7 @@ var as4Plugin = {
                 productFilterListSource: as4Plugin.getParamValue(idSearch, 'as4_productFilterListSource'),
                 with_product: 1
             },
-            type: "GET"
+            method: "POST"
         };
     },
 
@@ -125,12 +125,12 @@ var as4Plugin = {
                 productFilterListData: as4Plugin.getParamValue(idSearch, 'as4_productFilterListData'),
                 productFilterListSource: as4Plugin.getParamValue(idSearch, 'as4_productFilterListSource')
             },
-            type: "GET"
+            method: "POST"
         };
     },
 
-    // Add extra parameters to AJAX data and for History API
-    setExtraParameters: function(ajaxData, nextExtraParams) {
+     // Add extra parameters to AJAX data and for History API
+     setExtraParameters: function(ajaxData, nextExtraParams) {
         if (nextExtraParams == null) {
             return;
         }
@@ -203,6 +203,9 @@ var as4Plugin = {
         // Init sliders
         as4Plugin.initSliders();
 
+        // Init toggleLink
+        as4Plugin.initCriterionHideToggleLink();
+
         if (!keepCategoryInformation) {
             $('#main .block-category').remove();
         }
@@ -272,7 +275,10 @@ var as4Plugin = {
             $(document).scrollTop(currentTop);
         });
 
-        prestashop.emit('updateProductList', responseText);
+        // Emit a product list update event if we have products to show after the request
+        if (!responseText.without_products) {
+            prestashop.emit('updateProductList', responseText);
+        }
 
         // Update search block (facets)
         $('#PM_ASBlockOutput_' + responseText.id_search).replaceWith(responseText.rendered_facets);
@@ -291,7 +297,6 @@ var as4Plugin = {
             as4Plugin.pushStateNewURL(responseText.current_url);
         }
 
-
         if (typeof(responseText.html_block) != 'undefined' && responseText.html_block != '' && responseText.html_block != null) {
             var htmlBlock = responseText.html_block;
             step_search = false;
@@ -302,7 +307,7 @@ var as4Plugin = {
         }
         // var htmlResults = responseText.html_products;
         if (htmlBlock) {
-            if (hookName == 'top' || hookName == 'displayNavFullWidth') {
+            if (hookName == 'top' || hookName == 'displayTop' || hookName == 'displayNavFullWidth') {
                 if (step_search == 1) {
                     var htmlBlockSelection = responseText.html_selection_block;
                     if (htmlBlockSelection) {
@@ -334,7 +339,7 @@ var as4Plugin = {
             setTimeout(function() {
                 $('#PM_ASForm_' + id_search).ajaxSubmit(as4Plugin.getASFormOptions(id_search));
             }, 1);
-        } else if (search_method == 2) {
+        } else if (search_method == 2 || search_method == 4) {
             setTimeout(function() {
                 $('#PM_ASForm_' + id_search).ajaxSubmit(as4Plugin.getASFormDynamicCriterionOptions(id_search));
             }, 1);
@@ -343,7 +348,7 @@ var as4Plugin = {
 
     nextStep: function(id_search, search_method) {
         setTimeout(function() {
-            if (search_method == 2) {
+            if (search_method == 2 || search_method == 3 || search_method == 4) {
                 $('#PM_ASForm_' + id_search).ajaxSubmit(as4Plugin.getASFormDynamicCriterionOptions(id_search));
             } else {
                 $('#PM_ASForm_' + id_search).ajaxSubmit(as4Plugin.getASFormOptions(id_search));
@@ -388,7 +393,7 @@ var as4Plugin = {
                     $('option[value^="sales:"]', this).remove();
                     if ($('option[value^="sales:"]', this).length == 0) {
                         if (as4Plugin.getParamValue(id_search, 'orderBy') == 'sales') {
-                            $('option:selected', this).removeAttr('selected').prop('selected', false);
+                            $('option:selected', this).prop('selected', false);
                         }
                         // Add new items
                         if (as4Plugin.getParamValue(id_search, 'orderBy') == 'sales' && as4Plugin.getParamValue(id_search, 'orderWay') == 'asc') {
@@ -447,7 +452,12 @@ var as4Plugin = {
             e.preventDefault();
             id_search = as4Plugin.getIdSearchFromItem(this);
             $(document).trigger('as4-Search-Reset', [id_search]);
-            location.href = as4Plugin.getParamValue(id_search, 'resetURL');
+            const resetURL = as4Plugin.getParamValue(id_search, 'resetURL');
+            if (resetURL.length) {
+                location.href = resetURL;
+            } else {
+                location.href = window.prestashop.urls.current_url;
+            }
         });
 
         $(document).on('click', '.PM_ASSelectionsBlock .PM_ASSelectionsDropDownShowLink', function(e) {
@@ -482,10 +492,10 @@ var as4Plugin = {
             }
 
             if (!$(this).hasClass('PM_ASCriterionLinkSelected')) {
-                $(this).next('input').removeAttr('disabled');
+                $(this).next('input').prop('disabled', false);
                 $(this).addClass('PM_ASCriterionLinkSelected');
             } else {
-                $(this).next('input').attr('disabled', 'disabled');
+                $(this).next('input').prop('disabled', true);
                 $(this).removeClass('PM_ASCriterionLinkSelected');
             }
 
@@ -508,10 +518,10 @@ var as4Plugin = {
             }
 
             if (!$(this).hasClass('PM_ASCriterionLinkSelected')) {
-                $(this).next('input').removeAttr('disabled');
+                $(this).next('input').prop('disabled', false);
                 $(this).addClass('PM_ASCriterionLinkSelected');
             } else {
-                $(this).next('input').attr('disabled', 'disabled');
+                $(this).next('input').prop('disabled', true);
                 $(this).removeClass('PM_ASCriterionLinkSelected');
             }
 
@@ -521,6 +531,11 @@ var as4Plugin = {
         $('body').on('change', '#search_filters select, .PM_ASBlockOutput .PM_ASCriterionGroupSelect', function(e) {
             e.preventDefault();
             e.stopImmediatePropagation();
+
+            // Do not proceed change event while selectize is open
+            if (typeof (this.selectize) != 'undefined' && this.selectize.isOpen && $(this).attr('multiple') != 'multiple') {
+                return;
+            }
 
             id_search = as4Plugin.getIdSearchFromItem(this);
             id_criterion_group = $(this).data('id-criterion-group');
@@ -555,12 +570,12 @@ var as4Plugin = {
             $('#PM_ASInputCritRange' + id_search + '_' + id_criterion_group).val(newInputValue);
 
             if (step_search == 1) {
-                as4Plugin.nextStep(id_search, $('#PM_ASInputCritRange' + id_search + '_' + id_criterion_group), null, search_method);
+                as4Plugin.nextStep(id_search, search_method);
             } else {
                 if (search_method == 1) {
                     $('#PM_ASForm_' + id_search + '').ajaxSubmit(as4Plugin.getASFormOptions(id_search));
                 }
-                if (search_method == 2) {
+                if (search_method == 2 || search_method == 4) {
                     $('#PM_ASForm_' + id_search + '').ajaxSubmit(as4Plugin.getASFormDynamicCriterionOptions(id_search));
                 }
             }
@@ -609,7 +624,7 @@ var as4Plugin = {
             var e = $(this);
             var hideState = $(e).parent('.PM_ASShowCriterionsGroupHidden').next('.PM_ASCriterionsGroupHidden:hidden').length;
             $.ajax({
-                type: "GET",
+                method: "POST",
                 url: ASSearchUrl,
                 cache: false,
                 data: ('setHideCriterionStatus=1&id_search=' + id_search + '&state=' + hideState + '&productFilterListData=' + as4Plugin.getParamValue(id_search, 'as4_productFilterListData') + '&productFilterListSource=' + as4Plugin.getParamValue(id_search, 'as4_productFilterListSource')),
@@ -635,15 +650,15 @@ var as4Plugin = {
             }
             // For checkbox
             if ($(this).attr('type') == 'checkbox') {
-                if (!$(this).attr('checked')) {
+                if (!$(this).prop('checked')) {
                     var curIndex = $(this).parent('li').index();
-                    $(this).parent('li').parent('ul').find('li:not(:eq(' + curIndex + ')) > input[type=checkbox]').removeAttr('checked');
+                    $(this).parent('li').parent('ul').find('li:not(:eq(' + curIndex + ')) > input[type=checkbox]').prop('checked', false);
                 }
             } else {
                 if (!$(this).hasClass('PM_ASCriterionLinkSelected')) {
                     var curIndex = $(this).parent('li').index();
-                    $(this).parent('li').parent('ul').find('li:eq(' + curIndex + ') > input[type=hidden]').attr('disabled', '');
-                    $(this).parent('li').parent('ul').find('li:not(:eq(' + curIndex + ')) > input[type=hidden]').attr('disabled', 'disabled');
+                    $(this).parent('li').parent('ul').find('li:eq(' + curIndex + ') > input[type=hidden]').prop('disabled', false);
+                    $(this).parent('li').parent('ul').find('li:not(:eq(' + curIndex + ')) > input[type=hidden]').prop('disabled', true);
                     $(this).parent('li').parent('ul').find('li > a').removeClass('PM_ASCriterionLinkSelected');
                 }
             }
@@ -655,7 +670,7 @@ var as4Plugin = {
             e.preventDefault();
             var id_search = as4Plugin.getIdSearchFromItem(this);
 
-            $(this).next('input').attr('disabled', 'disabled');
+            $(this).next('input').prop('disabled', true);
             $(this).parents('form').ajaxSubmit(as4Plugin.getASFormOptions(id_search));
         });
 
@@ -800,12 +815,12 @@ var as4Plugin = {
                     as4Plugin.assignRangeValues($(this), id_search, ui);
 
                     if (step_search == 1) {
-                        as4Plugin.nextStep(id_search, $('#PM_ASInputCritRange' + id_search + '_' + $(this).data('id-criterion-group')), null, search_method);
+                        as4Plugin.nextStep(id_search, search_method);
                     } else {
                         if (search_method == 1) {
                             $('#PM_ASForm_' + id_search).ajaxSubmit(as4Plugin.getASFormOptions(id_search));
                         }
-                        if (search_method == 2) {
+                        if (search_method == 2 || search_method == 4) {
                             $('#PM_ASForm_' + id_search).ajaxSubmit(as4Plugin.getASFormDynamicCriterionOptions(id_search));
                         }
                     }
@@ -814,25 +829,7 @@ var as4Plugin = {
         });
     },
 
-    assignRangeValues: function(slider, id_search, ui) {
-        slideMinValue = Math.round(ui.values[0]*100)/100;
-        slideMaxValue = Math.round(ui.values[1]*100)/100;
-
-        if (typeof(slider.data('currency-format')) != 'undefined' && slider.data('currency-format') != null && slider.data('currency-format').length > 0) {
-            // Price slider
-            $('#PM_ASCritRangeValue' + id_search + '_' + slider.data('id-criterion-group')).html(as4Plugin.formatCurrency(slider.data('currency-format'), slideMinValue) + ' - ' + as4Plugin.formatCurrency(slider.data('currency-format'), slideMaxValue));
-        } else {
-            $('#PM_ASCritRangeValue' + id_search + '_' + slider.data('id-criterion-group')).html(slider.data('left-range-sign') + slideMinValue + slider.data('right-range-sign') + ' - ' + slider.data('left-range-sign') + slideMaxValue + slider.data('right-range-sign'));
-        }
-        $('#PM_ASInputCritRange' + id_search + '_' + slider.data('id-criterion-group')).val('' + slideMinValue + '~' + slideMaxValue);
-    },
-
-    initSearchBlock: function(id_search, search_method, step_search) {
-        $(document).trigger('as4-Before-Init-Search-Block', [id_search, search_method, step_search]);
-
-        // Init sliders
-        as4Plugin.initSliders();
-
+    initCriterionHideToggleLink: function() {
         $('.PM_ASCriterionHideToggleLink').click(function(e) {
             e.preventDefault();
             return;
@@ -855,10 +852,38 @@ var as4Plugin = {
             $(this).find('.PM_ASCriterionGroupColor.color_to_pick_list li.PM_ASCriterionHide').css('display', 'none');
             $(this).find('.PM_ASCriterionGroupImage li.PM_ASCriterionHide').css('display', 'none');
         });
+    },
+
+    assignRangeValues: function(slider, id_search, ui) {
+        slideMinValue = Math.round(ui.values[0]*100)/100;
+        slideMaxValue = Math.round(ui.values[1]*100)/100;
+
+        if (typeof (slider.data('currency-iso-code')) != 'undefined' && slider.data('currency-iso-code') != null && slider.data('currency-iso-code').length > 0) {
+            // Price slider
+            let formatterOptions = {
+                currencyIsoCode: slider.data('currency-iso-code'),
+                currencyPrecision: slider.data('currency-precision')
+            };
+            $('#PM_ASCritRangeValue' + id_search + '_' + slider.data('id-criterion-group')).html(as4Plugin.formatCurrency(formatterOptions, slideMinValue) + ' - ' + as4Plugin.formatCurrency(formatterOptions, slideMaxValue));
+        } else {
+            $('#PM_ASCritRangeValue' + id_search + '_' + slider.data('id-criterion-group')).html(slider.data('left-range-sign') + slideMinValue + slider.data('right-range-sign') + ' - ' + slider.data('left-range-sign') + slideMaxValue + slider.data('right-range-sign'));
+        }
+        $('#PM_ASInputCritRange' + id_search + '_' + slider.data('id-criterion-group')).val('' + slideMinValue + '~' + slideMaxValue);
+    },
+
+    initSearchBlock: function(id_search, search_method, step_search) {
+        $(document).trigger('as4-Before-Init-Search-Block', [id_search, search_method, step_search]);
+
+        // Init sliders
+        as4Plugin.initSliders();
+
+        // Init toggleLink
+        as4Plugin.initCriterionHideToggleLink();
+
         as4Plugin.removeOldEvents(id_search);
 
         // Submit search
-        if (search_method == 2) {
+        if (search_method == 2 || search_method == 4) {
             $('#PM_ASForm_' + id_search).ajaxForm(as4Plugin.getASFormOptions(id_search));
         }
         $(document).trigger('as4-After-Init-Search-Block', [id_search, search_method, step_search]);
@@ -870,7 +895,7 @@ var as4Plugin = {
         var input_next_id_criterion_group = $('#PM_ASBlock_' + id_search).find('input[name="next_id_criterion_group"]');
         if (next_id_criterion_group != 0) {
             $(input_next_id_criterion_group).val(next_id_criterion_group);
-        } else  {
+        } else {
             $(input_next_id_criterion_group).val('');
         }
     },
@@ -899,6 +924,7 @@ var as4Plugin = {
         }
         return destUrlSplit.join('&');
     },
+
 
     moveFormContainerForSEOPages: function() {
         if (typeof($('div#PM_ASFormContainerHidden')) != 'undefined' && $('div#PM_ASFormContainerHidden').length > 0) {
@@ -978,21 +1004,7 @@ var as4Plugin = {
                     hideSelected: true,
                     copyClassesToDropdown: false,
                     closeAfterSelect: true,
-                    allowEmptyOption: true,
-                    triggerChangeEvent: false,
-                    onChange: function(value, event) {
-                        if (typeof event == 'object' && value != null) {
-                            if (event.type == 'keydown' && !value.length) {
-                                if (event.keyCode == 8) {
-                                    this.open();
-                                    return;
-                                }
-                            }
-                        }
-
-                        // Restore native triggering process
-                        this.$input.trigger('change');
-                    },
+                    allowEmptyOption: true
                 });
             });
             // Product comparison
@@ -1115,96 +1127,20 @@ var as4Plugin = {
     },
 
     // Format currency regarding format
-    formatCurrency: function(mask, value) {
-        // From: http://mottie.github.io/javascript-number-formatter/src/format.js
-        if ( !mask || isNaN( +value ) ) {
-            return value; // return as it is.
+    formatCurrency: function(options, value) {
+        if ((typeof (Intl) == 'undefined') || (typeof (Intl.NumberFormat) == 'undefined')) {
+            return value;
         }
 
-        var isNegative, result, decimal, group, posLeadZero, posTrailZero, posSeparator,
-            part, szSep, integer,
-
-            // find prefix/suffix
-            len = mask.length,
-            start = mask.search( /[0-9\-\+#]/ ),
-            prefix = start > 0 ? mask.substring( 0, start ) : '',
-            // reverse string: not an ideal method if there are surrogate pairs
-            str = mask.split( '' ).reverse().join( '' ),
-            end = str.search( /[0-9\-\+#]/ ),
-            offset = len - end,
-            substr = mask.substring( offset, offset + 1 ),
-            indx = offset + ( ( substr === '.' || ( substr === ',' )) ? 1 : 0 ),
-            suffix = end > 0 ? mask.substring( indx, len ) : '';
-
-        // mask with prefix & suffix removed
-        mask = mask.substring( start, indx );
-
-        // convert any string to number according to formation sign.
-        value = mask.charAt( 0 ) === '-' ? -value : +value;
-        isNegative = value < 0 ? value = -value : 0; // process only abs(), and turn on flag.
-
-        // search for separator for grp & decimal, anything not digit, not +/- sign, not #.
-        result = mask.match( /[^\d\-\+#]/g );
-        decimal = ( result && result[ result.length - 1 ] ) || '.'; // treat the right most symbol as decimal
-        group = ( result && result[ 1 ] && result[ 0 ] ) || ',';  // treat the left most symbol as group separator
-
-        // split the decimal for the format string if any.
-        mask = mask.split( decimal );
-        // Fix the decimal first, toFixed will auto fill trailing zero.
-        value = value.toFixed( mask[ 1 ] && mask[ 1 ].length );
-        value = +( value ) + ''; // convert number to string to trim off *all* trailing decimal zero(es)
-
-        // fill back any trailing zero according to format
-        posTrailZero = mask[ 1 ] && mask[ 1 ].lastIndexOf( '0' ); // look for last zero in format
-        part = value.split( '.' );
-        // integer will get !part[1]
-        if ( !part[ 1 ] || ( part[ 1 ] && part[ 1 ].length <= posTrailZero ) ) {
-            value = ( +value ).toFixed( posTrailZero + 1 );
-        }
-        szSep = mask[ 0 ].split( group ); // look for separator
-        mask[ 0 ] = szSep.join( '' ); // join back without separator for counting the pos of any leading 0.
-
-        posLeadZero = mask[ 0 ] && mask[ 0 ].indexOf( '0' );
-        if ( posLeadZero > -1 ) {
-            while ( part[ 0 ].length < ( mask[ 0 ].length - posLeadZero ) ) {
-                part[ 0 ] = '0' + part[ 0 ];
-            }
-        } else if ( +part[ 0 ] === 0 ) {
-            part[ 0 ] = '';
-        }
-
-        value = value.split( '.' );
-        value[ 0 ] = part[ 0 ];
-
-        // process the first group separator from decimal (.) only, the rest ignore.
-        // get the length of the last slice of split result.
-        posSeparator = ( szSep[ 1 ] && szSep[ szSep.length - 1 ].length );
-        if ( posSeparator ) {
-            integer = value[ 0 ];
-            str = '';
-            offset = integer.length % posSeparator;
-            len = integer.length;
-            for ( indx = 0; indx < len; indx++ ) {
-                str += integer.charAt( indx ); // ie6 only support charAt for sz.
-                // -posSeparator so that won't trail separator on full length
-                /*jshint -W018 */
-                if ( !( ( indx - offset + 1 ) % posSeparator ) && indx < len - posSeparator ) {
-                    str += group;
-                }
-            }
-            value[ 0 ] = str;
-        }
-        value[ 1 ] = ( mask[ 1 ] && value[ 1 ] ) ? decimal + value[ 1 ] : '';
-
-        // remove negative sign if result is zero
-        result = value.join( '' );
-        if ( result === '0' || result === '' ) {
-            // remove negative sign if result is zero
-            isNegative = false;
-        }
-
-        // put back any negation, combine integer and fraction, and add back prefix & suffix
-        return prefix + ( ( isNegative ? '-' : '' ) + result ) + suffix;
+        return (new Intl.NumberFormat(window.navigator.language, {
+            style: 'currency',
+            currency: options.currencyIsoCode,
+            minimumFractionDigits: (options.currencyPrecision != '' ? options.currencyPrecision : undefined)
+        }).format(value));
     }
-
 }
+
+// Emit a custom event once this plugin file has been loaded in order to let our inline script know that it can init the
+// engines on the page, if any
+const as4PluginEventReady = new CustomEvent('as4PluginReady', { detail: as4Plugin });
+document.dispatchEvent(as4PluginEventReady);

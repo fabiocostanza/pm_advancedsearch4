@@ -1,5 +1,5 @@
 <div id="addons-rating-container" class="ui-widget note">
-    <div style="margin-top: 20px; margin-bottom: 20px; padding: 0 .7em; text-align: center;" class="ui-state-highlight ui-corner-all">
+    <div style="margin-top: 20px; margin-bottom: 20px; text-align: center;" class="alert alert-success">
         <p class="invite">
             {l s='You are satisfied with our module and want to encourage us to add new features ?' mod='pm_advancedsearch4'}
             <br />

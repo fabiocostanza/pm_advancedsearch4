@@ -18,21 +18,21 @@
  */
 
 (function($) {
-	// regular expression for matching our placeholders; e.g., #{my-cLaSs_name77}
-	var regx = /#\{([^{}]*)}/g;
+    // regular expression for matching our placeholders; e.g., #{my-cLaSs_name77}
+    var regx = /#\{([^{}]*)}/g;
 
-	$.extend({
-		// public interface: $.tmpl
-		tmpl : function(tmpl) {
-			// default to doing no harm
-			tmpl = tmpl || '';
-			var vals = (2 === arguments.length && 'object' === typeof arguments[1] ? arguments[1] : Array.prototype.slice.call(arguments,1));
-			// function to making replacements
-			var repr = function (str, match) {
-				return typeof vals[match] === 'string' || typeof vals[match] === 'number' ? vals[match] : str;
-			};
+    $.extend({
+        // public interface: $.tmpl
+        tmpl : function(tmpl) {
+            // default to doing no harm
+            tmpl = tmpl || '';
+            var vals = (2 === arguments.length && 'object' === typeof arguments[1] ? arguments[1] : Array.prototype.slice.call(arguments,1));
+            // function to making replacements
+            var repr = function (str, match) {
+                return typeof vals[match] === 'string' || typeof vals[match] === 'number' ? vals[match] : str;
+            };
 
-			return tmpl.replace(regx, repr);
-		}
-	});
+            return tmpl.replace(regx, repr);
+        }
+    });
 })($);

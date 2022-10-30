@@ -3,7 +3,7 @@
  *
  * @author Presta-Module.com <support@presta-module.com>
  * @copyright Presta-Module
- * @license   Commercial
+ * @license see file: LICENSE.txt
  *
  *           ____     __  __
  *          |  _ \   |  \/  |
@@ -16,6 +16,7 @@
 if (!defined('_PS_VERSION_')) {
     exit;
 }
+use AdvancedSearch\Models\Search;
 class pm_advancedsearch4cronModuleFrontController extends ModuleFrontController
 {
     private $idSearch;
@@ -39,7 +40,7 @@ class pm_advancedsearch4cronModuleFrontController extends ModuleFrontController
         }
         $this->idSearch = (int)Tools::getValue('id_search');
         if (!empty($this->idSearch)) {
-            $this->searchInstance = new AdvancedSearchClass((int)$this->idSearch, (int)$this->context->language->id);
+            $this->searchInstance = new Search((int)$this->idSearch, (int)$this->context->language->id);
             if (!Validate::isLoadedObject($this->searchInstance)) {
                 Tools::redirect('404');
             }
@@ -49,6 +50,6 @@ class pm_advancedsearch4cronModuleFrontController extends ModuleFrontController
         } else {
             $indexationStats = $this->module->cronTask();
         }
-        die(Tools::jsonEncode($indexationStats));
+        die(json_encode($indexationStats));
     }
 }

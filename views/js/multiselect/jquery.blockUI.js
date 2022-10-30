@@ -17,7 +17,7 @@
 $.fn._fadeIn = $.fn.fadeIn;
 
 var setExpr = (function() {
-	if (!$.browser.msie) return false;
+    if (!$.browser.msie) return false;
     var div = document.createElement('div');
     try { div.style.setExpression('width','0+0'); }
     catch(e) { return false; }
@@ -31,15 +31,15 @@ $.unblockUI = function(opts) { remove(window, opts); };
 
 // convenience method for quick growl-like notifications  (http://www.google.com/search?q=growl)
 $.growlUI = function(title, message, timeout, onClose) {
-	var $m = $('<div class="growlUI"></div>');
-	if (title) $m.append('<h1>'+title+'</h1>');
-	if (message) $m.append('<h2>'+message+'</h2>');
-	if (timeout == undefined) timeout = 3000;
+    var $m = $('<div class="growlUI"></div>');
+    if (title) $m.append('<h1>'+title+'</h1>');
+    if (message) $m.append('<h2>'+message+'</h2>');
+    if (timeout == undefined) timeout = 3000;
     $.blockUI({
-		message: $m, fadeIn: 700, fadeOut: 1000, centerY: false,
-		timeout: timeout, showOverlay: false,
-		onUnblock: onClose,
-		css: $.blockUI.defaults.growlCSS
+        message: $m, fadeIn: 700, fadeOut: 1000, centerY: false,
+        timeout: timeout, showOverlay: false,
+        onUnblock: onClose,
+        css: $.blockUI.defaults.growlCSS
     });
 };
 
@@ -91,28 +91,28 @@ $.blockUI.defaults = {
         cursor:          'wait'
     },
 
-	// styles applied when using $.growlUI
-	growlCSS: {
-		width:    '350px',
-		top:      '10px',
-		left:     '',
-		right:    '10px',
-	    border:   'none',
-	    padding:  '5px',
-	    opacity:   0.6,
-		cursor:    null,
-	    color:    '#fff',
-	    backgroundColor: '#000',
-	    '-webkit-border-radius': '10px',
-	    '-moz-border-radius':    '10px'
-	},
+    // styles applied when using $.growlUI
+    growlCSS: {
+        width:    '350px',
+        top:      '10px',
+        left:     '',
+        right:    '10px',
+        border:   'none',
+        padding:  '5px',
+        opacity:   0.6,
+        cursor:    null,
+        color:    '#fff',
+        backgroundColor: '#000',
+        '-webkit-border-radius': '10px',
+        '-moz-border-radius':    '10px'
+    },
 
-	// IE issues: 'about:blank' fails on HTTPS and javascript:false is s-l-o-w
-	// (hat tip to Jorge H. N. de Vasconcelos)
-	iframeSrc: /^https/i.test(window.location.href || '') ? 'javascript:false' : 'about:blank',
+    // IE issues: 'about:blank' fails on HTTPS and javascript:false is s-l-o-w
+    // (hat tip to Jorge H. N. de Vasconcelos)
+    iframeSrc: /^https/i.test(window.location.href || '') ? 'javascript:false' : 'about:blank',
 
-	// force usage of iframe in non-IE browsers (handy for blocking applets)
-	forceIframe: false,
+    // force usage of iframe in non-IE browsers (handy for blocking applets)
+    forceIframe: false,
 
     // z-index for the blocking overlay
     baseZ: 1000,
@@ -125,8 +125,8 @@ $.blockUI.defaults = {
     // on "short" pages.  disable if you wish to prevent changes to the body height
     allowBodyStretch: true,
 
-	// enable if you want key and mouse events to be disabled for content that is blocked
-	bindEvents: true,
+    // enable if you want key and mouse events to be disabled for content that is blocked
+    bindEvents: true,
 
     // be default blockUI will supress tab navigation from leaving blocking content
     // (if bindEvents is true)
@@ -138,11 +138,11 @@ $.blockUI.defaults = {
     // fadeOut time in millis; set to 0 to disable fadeOut on unblock
     fadeOut:  400,
 
-	// time in millis to wait before auto-unblocking; set to 0 to disable auto-unblock
-	timeout: 0,
+    // time in millis to wait before auto-unblocking; set to 0 to disable auto-unblock
+    timeout: 0,
 
-	// disable if you don't want to show the overlay
-	showOverlay: true,
+    // disable if you don't want to show the overlay
+    showOverlay: true,
 
     // if true, focus will be placed in the first available input field when
     // page blocking
@@ -190,8 +190,8 @@ function install(el, opts) {
         data.parent = node.parentNode;
         data.display = node.style.display;
         data.position = node.style.position;
-		if (data.parent)
-			data.parent.removeChild(node);
+        if (data.parent)
+            data.parent.removeChild(node);
     }
 
     var z = opts.baseZ;
@@ -202,7 +202,7 @@ function install(el, opts) {
     // layer3 is the message content that is displayed while blocking
 
     var lyr1 = ($.browser.msie || opts.forceIframe)
-    	? $('<iframe class="blockUI" style="z-index:'+ (z++) +';display:none;border:none;margin:0;padding:0;position:absolute;width:100%;height:100%;top:0;left:0" src="'+opts.iframeSrc+'"></iframe>')
+        ? $('<iframe class="blockUI" style="z-index:'+ (z++) +';display:none;border:none;margin:0;padding:0;position:absolute;width:100%;height:100%;top:0;left:0" src="'+opts.iframeSrc+'"></iframe>')
         : $('<div class="blockUI" style="display:none"></div>');
     var lyr2 = $('<div class="blockUI blockOverlay" style="z-index:'+ (z++) +';display:none;border:none;margin:0;padding:0;width:100%;height:100%;top:0;left:0"></div>');
     var lyr3 = full ? $('<div class="blockUI blockMsg blockPage" style="z-index:'+z+';display:none;position:fixed"></div>')
@@ -253,35 +253,35 @@ function install(el, opts) {
                 if (full) s.setExpression('top','(document.documentElement.clientHeight || document.body.clientHeight) / 2 - (this.offsetHeight / 2) + (blah = document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop) + "px"');
                 s.marginTop = 0;
             }
-			else if (!opts.centerY && full) {
-				var top = (opts.css && opts.css.top) ? parseInt(opts.css.top) : 0;
-				var expression = '((document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop) + '+top+') + "px"';
+            else if (!opts.centerY && full) {
+                var top = (opts.css && opts.css.top) ? parseInt(opts.css.top) : 0;
+                var expression = '((document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop) + '+top+') + "px"';
                 s.setExpression('top',expression);
-			}
+            }
         });
     }
 
     // show the message
-	if (msg) {
-		lyr3.append(msg);
-		if (msg.jquery || msg.nodeType)
-			$(msg).show();
-	}
+    if (msg) {
+        lyr3.append(msg);
+        if (msg.jquery || msg.nodeType)
+            $(msg).show();
+    }
 
-	if (($.browser.msie || opts.forceIframe) && opts.showOverlay)
-		lyr1.show(); // opacity is zero
-	if (opts.fadeIn) {
-		if (opts.showOverlay)
-			lyr2._fadeIn(opts.fadeIn);
-		if (msg)
-			lyr3.fadeIn(opts.fadeIn);
-	}
-	else {
-		if (opts.showOverlay)
-			lyr2.show();
-		if (msg)
-			lyr3.show();
-	}
+    if (($.browser.msie || opts.forceIframe) && opts.showOverlay)
+        lyr1.show(); // opacity is zero
+    if (opts.fadeIn) {
+        if (opts.showOverlay)
+            lyr2._fadeIn(opts.fadeIn);
+        if (msg)
+            lyr3.fadeIn(opts.fadeIn);
+    }
+    else {
+        if (opts.showOverlay)
+            lyr2.show();
+        if (msg)
+            lyr3.show();
+    }
 
     // bind key and mouse events
     bind(1, el, opts);
@@ -295,25 +295,25 @@ function install(el, opts) {
     else
         center(lyr3[0], opts.centerX, opts.centerY);
 
-	if (opts.timeout) {
-		// auto-unblock
-		var to = setTimeout(function() {
-			full ? $.unblockUI(opts) : $(el).unblock(opts);
-		}, opts.timeout);
-		$(el).data('blockUI.timeout', to);
-	}
+    if (opts.timeout) {
+        // auto-unblock
+        var to = setTimeout(function() {
+            full ? $.unblockUI(opts) : $(el).unblock(opts);
+        }, opts.timeout);
+        $(el).data('blockUI.timeout', to);
+    }
 };
 
 // remove the block
 function remove(el, opts) {
     var full = el == window;
-	var $el = $(el);
+    var $el = $(el);
     var data = $el.data('blockUI.history');
-	var to = $el.data('blockUI.timeout');
-	if (to) {
-		clearTimeout(to);
-		$el.removeData('blockUI.timeout');
-	}
+    var to = $el.data('blockUI.timeout');
+    if (to) {
+        clearTimeout(to);
+        $el.removeData('blockUI.timeout');
+    }
     opts = $.extend({}, $.blockUI.defaults, opts || {});
     bind(0, el, opts); // unbind events
     var els = full ? $('body').children().filter('.blockUI') : $('.blockUI', el);
@@ -340,8 +340,8 @@ function reset(els,data,opts,el) {
     if (data && data.el) {
         data.el.style.display = data.display;
         data.el.style.position = data.position;
-		if (data.parent)
-			data.parent.appendChild(data.el);
+        if (data.parent)
+            data.parent.appendChild(data.el);
         $(data.el).removeData('blockUI.history');
     }
 
@@ -359,9 +359,9 @@ function bind(b, el, opts) {
     if (!full)
         $el.data('blockUI.isBlocked', b);
 
-	// don't bind events when overlay is not in use or if bindEvents is false
+    // don't bind events when overlay is not in use or if bindEvents is false
     if (!opts.bindEvents || (b && !opts.showOverlay))
-		return;
+        return;
 
     // bind anchors and inputs for mouse and key events
     var events = 'mousedown mouseup keydown keypress';

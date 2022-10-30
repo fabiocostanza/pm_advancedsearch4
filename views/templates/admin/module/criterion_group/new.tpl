@@ -1,20 +1,24 @@
 {as4_startForm id="criteriaGroupOptions_{$params.obj->id}" obj=$params.obj params=$params}
 
-{module->_displayTitle text="{l s='Criterion group settings' mod='pm_advancedsearch4'}"}
-
-{if $params.obj->criterion_group_type == 'category'}
-    {if !empty($params.obj->id_criterion_group_linked)}
-        {module->_displaySubTitle text="{l s='Type:' mod='pm_advancedsearch4'} {l s='Category (level %d)' sprintf=$params.obj->id_criterion_group_linked mod='pm_advancedsearch4'}"}
+<h2>
+    {strip}
+    {l s='Criteria group settings' mod='pm_advancedsearch4'} <small class="text-muted">
+    {if $params.obj->criterion_group_type == 'category'}
+        {if !empty($params.obj->id_criterion_group_linked)}
+            ({l s='Type:' mod='pm_advancedsearch4'} {l s='Category (level %d)' sprintf=$params.obj->id_criterion_group_linked mod='pm_advancedsearch4'})
+        {else}
+            ({l s='Type:' mod='pm_advancedsearch4'} {l s='Category (all level)' mod='pm_advancedsearch4'})
+        {/if}
     {else}
-        {module->_displaySubTitle text="{l s='Type:' mod='pm_advancedsearch4'} {l s='Category (all level)' mod='pm_advancedsearch4'}"}
+        ({l s='Type:' mod='pm_advancedsearch4'} {$criteria_group_labels[$params.obj->criterion_group_type]|ucfirst})
     {/if}
-{else}
-    {module->_displaySubTitle text="{l s='Type:' mod='pm_advancedsearch4'} {$criteria_group_labels[$params.obj->criterion_group_type]|ucfirst}"}
-{/if}
+    </small>
+{/strip}
+</h2>
 
 {if $params.obj->criterion_group_type == 'subcategory'}
-    {module->_showInfo text="
-        {l s='This criterion group will only be available on categories and products pages.' mod='pm_advancedsearch4'}<br /><br />
+    {module->showInfo text="
+        {l s='This criteria group will only be available on categories and products pages.' mod='pm_advancedsearch4'}<br /><br />
         {l s='Only subcategories of the base URL (context) will be shown.' mod='pm_advancedsearch4'}
     "}
 {/if}
@@ -35,7 +39,7 @@
             {as4_inputActive obj=$params.obj key_active='show_all_depth' key_db='show_all_depth' label={l s='Show all depth' mod='pm_advancedsearch4'}}
             *}
         {else}
-            {as4_inputActive obj=$params.obj key_active='only_children' key_db='only_children' label={l s='Show only subcategories related to the previously selected criterions' mod='pm_advancedsearch4'}}
+            {as4_inputActive obj=$params.obj key_active='only_children' key_db='only_children' label={l s='Show only the subcategories of the selected category in the n-1 level category group' mod='pm_advancedsearch4'}}
         {/if}
     </div>
 {/if}
@@ -67,7 +71,7 @@
 <div class="multicrit" style="display:none">
     {as4_inputActive obj=$params.obj key_active='is_multicriteria' key_db='is_multicriteria' label={l s='Allow multiple choice' mod='pm_advancedsearch4'} onclick="showRelatedOptions($('#display_type'), '{$params.obj->criterion_group_type}');"}
     <div class="combined_criterion" style="display:none">
-        {as4_inputActive obj=$params.obj key_active='is_combined' key_db='is_combined' label={l s='Operator between criterions' mod='pm_advancedsearch4'} on_label={l s='AND' mod='pm_advancedsearch4'} off_label={l s='OR' mod='pm_advancedsearch4'}}
+        {as4_inputActive obj=$params.obj key_active='is_combined' key_db='is_combined' label={l s='Operator between criteria' mod='pm_advancedsearch4'} on_label={l s='AND' mod='pm_advancedsearch4'} off_label={l s='OR' mod='pm_advancedsearch4'}}
     </div>
 </div>
 
@@ -90,9 +94,11 @@
 <input name="id_search" value="{$params.obj->id_search|intval}" type="hidden" />
 <input name="id_criterion_group" value="{$params.obj->id|intval}" type="hidden" />
 
-{module->_displaySubmit text="{l s='Save' mod='pm_advancedsearch4'}" name='submitCriteriaGroupOptions'}
+{module->displaySubmit text="{l s='Save' d='Admin.Actions'}" name='submitCriteriaGroupOptions'}
 
 <script type="text/javascript">
+    window.supportsStepSearch = {$supportsStepSearch|json_encode};
+    window.supportsImageCriterionGroup = {$supportsImageCriterionGroup|json_encode};
     $(document).ready(function () {
         $("#range_on:checked").trigger("click");
         $("#range_off:checked").trigger("click");
@@ -103,30 +109,28 @@
 
 {if $params.obj->criterion_group_type|in_array:$sortable_criterion_group}
     <div class="custom_criteria_container">
-        <hr />
-        {module->_displayTitle text="{l s='Create a new custom criterion' mod='pm_advancedsearch4'}"}
+        <h3>{l s='Create a new custom criterion' mod='pm_advancedsearch4'}</h3>
         <div id="addCustomCriterionContainer" data-id-search="{$params.obj->id_search|intval}" data-id-criterion-group="{$params.obj->id|intval}">
             {as4_inputTextLang obj=$new_custom_criterion key='value' label={l s='Criterion label:' mod='pm_advancedsearch4'}}
             {if $is_color_group}
                 {as4_inputColor obj=$new_custom_criterion key='color' label={l s='Color:' mod='pm_advancedsearch4'}}
             {/if}
             <center>
-                {module->_displaySubmit text="{l s='Add custom criterion' mod='pm_advancedsearch4'}" name='submitAddCustomCriterionForm'}
+                {module->displaySubmit text="{l s='Add custom criterion' mod='pm_advancedsearch4'}" name='submitAddCustomCriterionForm'}
             </center>
         </div>
-        <hr />
     </div><!-- .custom_criteria_container -->
 
     <div class="sort_criteria_container">
-        {module->_displayTitle text="{l s='Sort criteria' mod='pm_advancedsearch4'}"}
+        <h3>{l s='Sort criteria' mod='pm_advancedsearch4'}</h3>
         <div style="width:380px;float:left;">
             <span style="float:left;line-height:25px;">
-                <b><em>{l s='Apply specific sort order:' mod='pm_advancedsearch4'}</em></b> &nbsp; &nbsp; 
-            </span> 
-            {as4_select obj=$params.obj options=$criterions_sort_by label=false key='sort_by' defaultvalue=0 onchange="reorderCriteria($('#sort_by').val(), $('#sort_way').val(), $('input[name=\'id_criterion_group\']').val(), {$params.obj->id_search|intval});"}
+                <b><em>{l s='Apply specific sort order:' mod='pm_advancedsearch4'}</em></b> &nbsp; &nbsp;
+            </span>
+            {as4_select obj=$params.obj options=$criterions_sort_by label=false key='sort_by' defaultvalue=0 onchange="reorderCriteria($('#sort_by').val(), $('#sort_way').val(), $('input[name=\'id_criterion_group\']').val(), {$params.obj->id_search|intval}, $('#display_type').val());"}
         </div>
         <div style="width:250px;float:left;">
-            {as4_select obj=$params.obj options=$criterions_sort_way label=false key='sort_way' defaultvalue=0 onchange="reorderCriteria($('#sort_by').val(), $('#sort_way').val(), $('input[name=\'id_criterion_group\']').val(), {$params.obj->id_search|intval});"}
+            {as4_select obj=$params.obj options=$criterions_sort_way label=false key='sort_way' defaultvalue=0 onchange="reorderCriteria($('#sort_by').val(), $('#sort_way').val(), $('input[name=\'id_criterion_group\']').val(), {$params.obj->id_search|intval}, $('#display_type').val());"}
         </div>
 
         {if !empty($criterions_list_rendered)}

@@ -4,16 +4,26 @@
 
 {include file="../../core/clear.tpl"}
 {if $auto_sync_active_status}
-    {module->_showInfo text="{l s='Be aware that auto synchronize object status with criterions is enabled into the module configuration. You will not be able to change the criterions status here.' mod='pm_advancedsearch4'}"}
+    {module->showInfo text="{l s='Be aware that auto synchronize object status with criteria is enabled into the module configuration. You will not be able to change the criteria status here.' mod='pm_advancedsearch4'}"}
 {/if}
 
 <div class="criterionGroupActions">
     <ul>
         <li>
-            <a href="{$base_config_url|as4_nofilter}&pm_load_function=processEnableAllCriterions&id_criterion_group={$criterion_group->id|intval}&id_search={$criterion_group->id_search|intval}" class="ajax_script_load activeAllCriterions{if $auto_sync_active_status} disabledAction{/if}" title="{l s='Enable all criterions' mod='pm_advancedsearch4'}">{l s='Enable all criterions' mod='pm_advancedsearch4'}</a>
+            <a href="{$base_config_url|as4_nofilter}&pm_load_function=processEnableAllCriterions&id_criterion_group={$criterion_group->id|intval}&id_search={$criterion_group->id_search|intval}"
+                class="ajax_script_load enableAllCriterions {if $auto_sync_active_status} disabledAction{/if}"
+                title="{l s='Enable all criteria' mod='pm_advancedsearch4'}"
+            >
+                <i class="material-icons">done_all</i> {l s='Enable all criteria' mod='pm_advancedsearch4'}
+            </a>
         </li>
         <li>
-            <a href="{$base_config_url|as4_nofilter}&pm_load_function=processDisableAllCriterions&id_criterion_group={$criterion_group->id|intval}&id_search={$criterion_group->id_search|intval}" class="ajax_script_load disableAllCriterions{if $auto_sync_active_status} disabledAction{/if}" title="{l s='Disable all criterions' mod='pm_advancedsearch4'}">{l s='Disable all criterions' mod='pm_advancedsearch4'}</a>
+            <a href="{$base_config_url|as4_nofilter}&pm_load_function=processDisableAllCriterions&id_criterion_group={$criterion_group->id|intval}&id_search={$criterion_group->id_search|intval}"
+                class="ajax_script_load disableAllCriterions {if $auto_sync_active_status} disabledAction{/if}"
+                title="{l s='Disable all criteria' mod='pm_advancedsearch4'}"
+            >
+                <i class="material-icons">close</i>{l s='Disable all criteria' mod='pm_advancedsearch4'}
+            </a>
         </li>
     </ul>
 </div>
@@ -22,7 +32,7 @@
 <table class="criterionsList">
     <thead>
         <th colspan="2">{l s='Label' mod='pm_advancedsearch4'}</th>
-        {if $criterion_group->display_type == 2}
+        {if $supportsImageCriterionGroup && $criterion_group->display_type == 2}
             <th>{l s='Image' mod='pm_advancedsearch4'}</th>
         {/if}
         {if $has_custom_criterions}
@@ -34,7 +44,7 @@
         {foreach from=$criterions item=criterion}
         <tr id="criterion_{$criterion.id_criterion|intval}">
             <td{if $criterion_group->sort_by == 'position'} class="dragIcon dragIconCriterion"{/if}>
-                <span class="ui-icon ui-icon-arrow-4-diag" style="{if $criterion_group->sort_by != 'position'}visibility:hidden{/if}"></span>
+                <i class="material-icons" style="{if $criterion_group->sort_by != 'position'}visibility:hidden{/if}">swap_vert</i>
             </td>
             <td>
                 {if empty($criterion.is_custom)}
@@ -62,11 +72,11 @@
                         <div class="criterionCustomLiveField">
                             {as4_inputTextLang obj=$criterion.obj key='value'}
                         </div>
-                        {module->_displaySubmit text="{l s='Save' mod='pm_advancedsearch4'}" name='submitCustomCriterionForm'}
+                        {module->displaySubmit text="{l s='Save' d='Admin.Actions'}" name='submitCustomCriterionForm'}
                     </div>
                 {/if}
             </td>
-            {if $criterion_group->display_type == 2}
+            {if $supportsImageCriterionGroup && $criterion_group->display_type == 2}
                 <td class="criterionImageTd">
                     <div class="criterionImageContainer">
                         <form action="{$base_config_url|as4_nofilter}" method="post" enctype="multipart/form-data" target="dialogIframePostForm">
@@ -94,24 +104,24 @@
                     <div class="criterionActions">
                         {strip}
                         <a href="{$base_config_url|as4_nofilter}&pm_load_function=processActiveCriterion&id_criterion={$criterion.id_criterion|intval}&id_search={$criterion_group->id_search|intval}" class="ajax_script_load {if !$auto_sync_active_status}activeCriterion{else} disabledAction{/if}">
-                            <img src="../img/admin/{if $criterion.visible}enabled{else}disabled{/if}.gif" id="imgActiveCriterion{$criterion.id_criterion|intval}" />
+                            <i id="imgActiveCriterion{$criterion.id_criterion|intval}" class="material-icons" data-current-mi-icon="{if $criterion.visible}done{else}close{/if}">{if $criterion.visible}done{else}close{/if}</i>
                         </a>
                         &nbsp;
                         <a href="{$base_config_url|as4_nofilter}&pm_load_function=processDeleteCustomCriterion&id_criterion={$criterion.id_criterion|intval}&id_search={$criterion_group->id_search|intval}" class="ajax_script_load pm_confirm deleteCustomCriterion" title="{l s='Do you really want to delete this custom criterion ?' mod='pm_advancedsearch4'}">
-                            <img src="../img/admin/delete.gif" id="imgDeleteCriterion{$criterion.id_criterion|intval}" class="imgDeleteCriterion" />
+                            <i id="imgDeleteCriterion{$criterion.id_criterion|intval}" class="material-icons" data-current-mi-icon="delete">delete</i>
                         </a>
                         {/strip}
                     </div>
                 {elseif empty($criterion.is_custom)}
                     <div class="criterionActions">
                         <a href="{$base_config_url|as4_nofilter}&pm_load_function=processActiveCriterion&id_criterion={$criterion.id_criterion|intval}&id_search={$criterion_group->id_search|intval}" class="ajax_script_load {if !$auto_sync_active_status}activeCriterion{else} disabledAction{/if}">
-                            <img src="../img/admin/{if $criterion.visible}enabled{else}disabled{/if}.gif" id="imgActiveCriterion{$criterion.id_criterion|intval}" />
+                            <i id="imgActiveCriterion{$criterion.id_criterion|intval}" class="material-icons" data-current-mi-icon="{if $criterion.visible}done{else}close{/if}">{if $criterion.visible}done{else}close{/if}</i>
                         </a>
                     </div>
                 {else}
                     <div class="criterionActions">
                         <a href="{$base_config_url|as4_nofilter}&pm_load_function=processActiveCriterion&id_criterion={$criterion.id_criterion|intval}&id_search={$criterion_group->id_search|intval}" class="ajax_script_load {if !$auto_sync_active_status}activeCriterion{else} disabledAction{/if}">
-                            <img src="../img/admin/{if $criterion.visible}enabled{else}disabled{/if}.gif" id="imgActiveCriterion{$criterion.id_criterion|intval}" />
+                            <i id="imgActiveCriterion{$criterion.id_criterion|intval}" class="material-icons" data-current-mi-icon="{if $criterion.visible}done{else}close{/if}">{if $criterion.visible}done{else}close{/if}</i>
                         </a>
                     </div>
                 {/if}
@@ -127,10 +137,10 @@
             axis: 'y',
             handle : '.dragIconCriterion',
             helper: function(e, ui) {
-                ui.children().each(function() {  
-                    $(this).width($(this).outerWidth(true));  
+                ui.children().each(function() {
+                    $(this).width($(this).outerWidth(true));
                 });
-                return ui;  
+                return ui;
             },
             update: function(event, ui) {
                 var order = $(this).sortable('toArray');

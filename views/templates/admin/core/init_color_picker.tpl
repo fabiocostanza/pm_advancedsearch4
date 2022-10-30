@@ -1,3 +1,3 @@
 <script type="text/javascript">
-    initColorPicker();
+    $.fn.mColorPicker.defaults.imageFolder = baseDir + 'img/admin/';
  </script>

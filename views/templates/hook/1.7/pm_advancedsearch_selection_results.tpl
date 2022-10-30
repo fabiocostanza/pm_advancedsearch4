@@ -1,4 +1,4 @@
-	<form action="{$ASSearchUrlForm}" method="GET" class="PM_ASSelections PM_ASSelectionsResults">
+	<form action="{$ASSearchUrlForm}" method="POST" class="PM_ASSelections PM_ASSelectionsResults">
 	{if (is_array($as_searchs[0].selected_criterion) AND sizeof($as_searchs[0].selected_criterion))}
 		<p><strong>{l s='Your selection' mod='pm_advancedsearch4'}</strong></p>
 		<ul class="PM_ASSelectionsCriterionsGroup">
@@ -41,14 +41,17 @@
 			{/if}
 		{/foreach}
 		<input type="hidden" name="id_search" value="{$as_searchs[0].id_search|intval}" />
-		{if As4SearchEngine::getCurrentCategory()}
-			<input type="hidden" name="id_category_search" value="{if isset($as_searchs[0].id_category_root) && $as_searchs[0].id_category_root > 0}{$as_searchs[0].id_category_root|intval}{else if As4SearchEngine::getCurrentCategory()}{As4SearchEngine::getCurrentCategory()|intval}{/if}" />
+		{if \AdvancedSearch\SearchEngineUtils::getCurrentCategory()}
+			<input type="hidden" name="id_category_search" value="{if isset($as_searchs[0].id_category_root) && $as_searchs[0].id_category_root > 0}{$as_searchs[0].id_category_root|intval}{else if \AdvancedSearch\SearchEngineUtils::getCurrentCategory()}{\AdvancedSearch\SearchEngineUtils::getCurrentCategory()|intval}{/if}" />
 		{/if}
-		{if As4SearchEngine::getCurrentManufacturer()}
-			<input type="hidden" name="id_manufacturer_search" value="{As4SearchEngine::getCurrentManufacturer()|intval}" />
+		{if \AdvancedSearch\SearchEngineUtils::getCurrentManufacturer()}
+			<input type="hidden" name="id_manufacturer_search" value="{\AdvancedSearch\SearchEngineUtils::getCurrentManufacturer()|intval}" />
 		{/if}
-		{if As4SearchEngine::getCurrentSupplier()}
-			<input type="hidden" name="id_supplier_search" value="{As4SearchEngine::getCurrentSupplier()|intval}" />
+		{if \AdvancedSearch\SearchEngineUtils::getCurrentSupplier()}
+			<input type="hidden" name="id_supplier_search" value="{\AdvancedSearch\SearchEngineUtils::getCurrentSupplier()|intval}" />
+		{/if}
+		{if \AdvancedSearch\SearchEngineUtils::getCurrentCMS()}
+			<input type="hidden" name="id_cms_search" value="{\AdvancedSearch\SearchEngineUtils::getCurrentCMS()|intval}" />
 		{/if}
 		{if isset($smarty.get.id_seo)}
 			<input type="hidden" name="id_seo" value="{$smarty.get.id_seo|intval}" />

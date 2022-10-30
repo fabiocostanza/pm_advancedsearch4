@@ -1,24 +1,23 @@
 {extends file='catalog/listing/category.tpl'}
 
 {block name='product_list_header'}
-    {if $as_seo_description}
-        <div class="block-category card card-block hidden-sm-down">
-            <h1 class="h1">{$as_seo_title}</h1>
-            {if $as_seo_description}
-                <div id="category-description" class="text-muted">{$as_seo_description nofilter}</div>
-            {/if}
-        </div>
-        <div class="text-xs-center hidden-md-up">
-            <h1 class="h1">{$as_seo_title}</h1>
-        </div>
-    {else}
-        <h2 class="h2">{$listing.label}</h2>
-    {/if}
+    <div id="js-product-list-header">
+        {if $as_seo_description}
+            <div class="block-category card card-block">
+                <h1 class="h1">{$as_seo_title}</h1>
+                <div class="block-category-inner">
+                    <div id="category-description" class="text-muted">{$as_seo_description nofilter}{* HTML *}</div>
+                </div>
+            </div>
+        {else}
+            <h1 class="h1">{$listing.label}</h1>
+        {/if}
+    </div>
 {/block}
 
 {block name='product_list_active_filters'}
     <div id="js-active-search-filters" class="hidden-sm-down">
-        {$listing.rendered_active_filters nofilter}
+        {$listing.rendered_active_filters nofilter}{* HTML *}
     </div>
 {/block}
 
@@ -40,4 +39,14 @@
             {/if}
         </div>
     </div>
+    {include file=$as_obj->getTplPath("pm_advancedsearch_js.tpl") as_searchs=[$as_search] jsInitOnly=true}
+{/block}
+
+{block name='product_list_bottom'}
+    {$smarty.block.parent}
+    {if !empty($as_seo_footer_description)}
+        <div class="as5-seo-page-footer-description">
+            {$as_seo_footer_description nofilter}{* HTML *}
+        </div>
+    {/if}
 {/block}

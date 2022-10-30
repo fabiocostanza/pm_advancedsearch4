@@ -17,10 +17,10 @@ Level Depth - Children
 	<option value="{$criterion.id_criterion|intval}" {if isset($as_criterion_is_selected) && $as_criterion_is_selected}selected="selected"{/if}{if !$criterion.nb_product || !$as_search.selected_criterions[$criterions_group.id_criterion_group].is_selected} class="PM_ASCriterionDisable" disabled="disabled"{/if}>{$criterion.value}</option>
 {else}
 	{assign var='in_select' value=0}
-	<li class="{if isset($as_criterion_is_selected) && $as_criterion_is_selected}PM_ASCriterionLevelSelected {/if}{if isset($as_criterion_selected) && $as_criterion_selected}PM_ASCriterionLevelChoosen {/if}PM_ASCriterionLevel level{$level_depth|intval}" 
-		data-id-category="{$criterion.id_criterion|intval}" 
-		data-id-parent="{$criterion.id_parent|intval}" 
-		data-level-depth="{$criterion.level_depth|intval}" 
+	<li class="{if isset($as_criterion_is_selected) && $as_criterion_is_selected}PM_ASCriterionLevelSelected {/if}{if isset($as_criterion_selected) && $as_criterion_selected}PM_ASCriterionLevelChoosen {/if}PM_ASCriterionLevel level{$level_depth|intval}"
+		data-id-category="{$criterion.id_criterion|intval}"
+		data-id-parent="{$criterion.id_parent|intval}"
+		data-level-depth="{$criterion.level_depth|intval}"
 		{if $level_depth eq 1 || isset($as_criterion_is_selected) && $as_criterion_is_selected}
 
 		{else}
@@ -31,7 +31,7 @@ Level Depth - Children
 			{/if}
 		{/if}>
 		{if isset($as_search.criterions_childrens[$criterions_group.id_criterion_group][$criterion.id_criterion_linked]) && count($as_search.criterions_childrens[$criterions_group.id_criterion_group][$criterion.id_criterion_linked]) > 0}
-			<span class="grower PM_ASCriterionOpenClose 
+			<span class="grower PM_ASCriterionOpenClose
 				{if isset($as_criterion_is_selected) && $as_criterion_is_selected}
 					PM_ASCriterionOpen
 				{else}
@@ -51,6 +51,6 @@ Level Depth - Children
 {if isset($as_search.criterions_childrens[$criterions_group.id_criterion_group][$criterion.id_criterion_linked])}
 	{assign var='level_depth' value=$level_depth+1}
 	{foreach from=$as_search.criterions_childrens[$criterions_group.id_criterion_group][$criterion.id_criterion_linked] item=children name=childrens key=c}
-		{include file=$as_obj->_getTplPath("pm_advancedsearch_criterions_level_depth_children.tpl") level_depth=$level_depth criterion=$children in_select=$in_select}
+		{include file=$as_obj->getTplPath("pm_advancedsearch_criterions_level_depth_children.tpl") level_depth=$level_depth criterion=$children in_select=$in_select}
 	{/foreach}
 {/if}

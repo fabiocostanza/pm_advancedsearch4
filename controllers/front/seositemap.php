@@ -3,7 +3,7 @@
  *
  * @author Presta-Module.com <support@presta-module.com>
  * @copyright Presta-Module
- * @license   Commercial
+ * @license see file: LICENSE.txt
  *
  *           ____     __  __
  *          |  _ \   |  \/  |
@@ -16,6 +16,9 @@
 if (!defined('_PS_VERSION_')) {
     exit;
 }
+use AdvancedSearch\Core;
+use AdvancedSearch\Models\Seo;
+use AdvancedSearch\Models\Search;
 class pm_advancedsearch4seositemapModuleFrontController extends ModuleFrontController
 {
     private $idSearch;
@@ -27,7 +30,7 @@ class pm_advancedsearch4seositemapModuleFrontController extends ModuleFrontContr
         }
         header('Content-type: text/xml');
         $this->idSearch = (int)Tools::getValue('id_search');
-        $this->searchInstance = new AdvancedSearchClass((int)$this->idSearch, (int)$this->context->language->id);
+        $this->searchInstance = new Search((int)$this->idSearch, (int)$this->context->language->id);
         if (!Validate::isLoadedObject($this->searchInstance)) {
             Tools::redirect('404');
         }
@@ -38,9 +41,9 @@ class pm_advancedsearch4seositemapModuleFrontController extends ModuleFrontContr
 XML;
         $xml = new SimpleXMLElement($xmlSiteMapHeader);
         foreach (Language::getLanguages(true, (int)$this->context->shop->id) as $language) {
-            $seoSearchs = AdvancedSearchSeoClass::getSeoSearchs($language['id_lang'], false, $this->idSearch);
+            $seoSearchs = Seo::getSeoSearchs($language['id_lang'], false, $this->idSearch);
             foreach ($seoSearchs as $seoSearch) {
-                $nbCriteria = count(unserialize($seoSearch['criteria']));
+                $nbCriteria = count(Core::decodeCriteria($seoSearch['criteria']));
                 if ($nbCriteria <= 3) {
                     $priority = 0.7;
                 } elseif ($nbCriteria <= 5) {
@@ -49,7 +52,7 @@ XML;
                     $priority = 0.5;
                 }
                 $sitemap = $xml->addChild('url');
-                $sitemap->addChild('loc', $this->context->link->getModuleLink('pm_advancedsearch4', 'seo', array('id_seo' => (int)$seoSearch['id_seo'], 'seo_url' => $seoSearch['seo_url']), null, (int)$language['id_lang']));
+                $sitemap->addChild('loc', $this->context->link->getModuleLink(_PM_AS_MODULE_NAME_, 'seo', array('id_seo' => (int)$seoSearch['id_seo'], 'seo_url' => $seoSearch['seo_url']), null, (int)$language['id_lang']));
                 $sitemap->addChild('priority', $priority);
                 $sitemap->addChild('changefreq', 'weekly');
             }

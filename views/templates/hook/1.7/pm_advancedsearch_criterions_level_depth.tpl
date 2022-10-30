@@ -8,7 +8,7 @@ Level Depth
 			<select data-id-criterion-group="{$criterions_group.id_criterion_group|intval}" name="as4c[{$criterions_group.id_criterion_group|intval}][]" id="PM_ASCriterionGroupSelect_{$as_search.id_search|intval}_{$criterions_group.id_criterion_group|intval}" class="PM_ASCriterionGroupSelect" style="display: none;">
 			<option value="">{if isset($criterions_group.all_label) && $criterions_group.all_label != ''}{$criterions_group.all_label}{else}{l s='All' mod='pm_advancedsearch4'}{/if}</option>
 			{foreach from=$as_search.criterions[$criterions_group.id_criterion_group] item=criterion name=criterions key=i}
-				{include file=$as_obj->_getTplPath("pm_advancedsearch_criterions_level_depth_children.tpl") level_depth=1 criterion=$criterion in_select=1}
+				{include file=$as_obj->getTplPath("pm_advancedsearch_criterions_level_depth_children.tpl") level_depth=1 criterion=$criterion in_select=1}
 			{/foreach}
 			</select>
 
@@ -17,7 +17,7 @@ Level Depth
 
 			<ul class="PM_ASLevelDepth" data-id-criterion-group="{$criterions_group.id_criterion_group|intval}">
 			{foreach from=$as_search.criterions[$criterions_group.id_criterion_group] item=criterion name=criterions key=i}
-				{include file=$as_obj->_getTplPath("pm_advancedsearch_criterions_level_depth_children.tpl") level_depth=1 criterion=$criterion}
+				{include file=$as_obj->getTplPath("pm_advancedsearch_criterions_level_depth_children.tpl") level_depth=1 criterion=$criterion}
 			{/foreach}
 			</ul>
 		{else}

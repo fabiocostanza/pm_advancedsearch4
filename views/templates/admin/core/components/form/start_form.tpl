@@ -1,4 +1,4 @@
-<form action="{$form_action|escape:'htmlall':'UTF-8'}" method="post" class="width3" id="{$form_id|escape:'htmlall':'UTF-8'}" target="{$form_target|escape:'htmlall':'UTF-8'}">
+<form action="{$form_action|escape:'htmlall':'UTF-8'}" method="post" class="defaultForm form-horizontal" id="{$form_id|escape:'htmlall':'UTF-8'}" target="{$form_target|escape:'htmlall':'UTF-8'}">
 {if !empty($obj_id)}
 <input type="hidden" name="{$obj_identifier}" value="{$obj_id|as4_nofilter}" />
 {/if}

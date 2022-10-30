@@ -20,7 +20,7 @@
 <div class="PM_ASCriterionsGroupOuter">
 
 {assign var='tpl_name' value='pm_advancedsearch_criterions_'|cat:$as_criteria_group_type_interal_name[$criterions_group.display_type]|cat:'.tpl'}
-{include file=$as_obj->_getTplPath($tpl_name)}
+{include file=$as_obj->getTplPath($tpl_name)}
 </div>
 {if $as_search.reset_group|intval && isset($as_search.selected_criterion[$criterions_group.id_criterion_group]) && sizeof($as_search.selected_criterion[$criterions_group.id_criterion_group])}
 	<a href="#" class="PM_ASResetGroup" rel="{$criterions_group.id_criterion_group|intval}">
@@ -28,7 +28,13 @@
 	</a>
 {/if}
 {/if}
-{if $as_search.step_search && !isset($as_search.selected_criterion[$criterions_group.id_criterion_group]) && empty($criterions_group.is_skipped) && !empty($as_search.criterions[$criterions_group.id_criterion_group]) && empty($criterions_group.next_group_have_selected_values)}
+{if $as_search.step_search
+    && !isset($as_search.selected_criterion[$criterions_group.id_criterion_group])
+    && empty($criterions_group.is_skipped)
+    && !empty($as_search.criterions[$criterions_group.id_criterion_group])
+    && empty($criterions_group.next_group_have_selected_values)
+    && (($as_search.search_method != 2 && $as_search.search_method != 4) || $as_search.nb_visible_criterions_groups > 1)
+}
 	<a href="#" class="PM_ASSkipGroup" rel="{$criterions_group.id_criterion_group|intval}">
 		{l s='Skip this step' mod='pm_advancedsearch4'}
 	</a>
