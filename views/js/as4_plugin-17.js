@@ -16,16 +16,13 @@
 var as4Plugin = {
 
     // Attributes
-    locationName: false,
     lastIdSearch: false,
     // Set to false in order to disable localStorage cache for AJAX queries
     localCache: false,
     localCacheKey: '',
-    waitingLayers: new Array(),
     params: new Array(),
     extraParams: new Array(),
     persistentParams: new Array(),
-    visibleCriterionsGroupsHash: '',
     fromBackForwardEvent: false,
     localStorageAvailable: null,
     blurEffect: true,
@@ -127,28 +124,6 @@ var as4Plugin = {
             },
             method: "POST"
         };
-    },
-
-     // Add extra parameters to AJAX data and for History API
-     setExtraParameters: function(ajaxData, nextExtraParams) {
-        if (nextExtraParams == null) {
-            return;
-        }
-        for (var i = 0; i < nextExtraParams.length; i++) {
-            tmpParameter = nextExtraParams[i].substring(1).split('=');
-            extraParameterKey = tmpParameter.shift();
-            if (extraParameterKey) {
-                extraParameterValue = tmpParameter.join('=');
-                ajaxData.push({
-                    name: extraParameterKey,
-                    value: extraParameterValue,
-                });
-                as4Plugin.extraParams.push({
-                    name: extraParameterKey,
-                    value: extraParameterValue,
-                });
-            }
-        }
     },
 
     // Pre-submit callback
@@ -354,27 +329,6 @@ var as4Plugin = {
                 $('#PM_ASForm_' + id_search).ajaxSubmit(as4Plugin.getASFormOptions(id_search));
             }
         }, 1);
-    },
-
-    // Get AS URL because it may be incorrectly formatted
-    getAsAjaxUrl: function(curUrl) {
-        var destUrl = curUrl;
-        var asPathReg = new RegExp("(" + ASPath + ")", "g");
-        if (!destUrl.match(asPathReg)) {
-            var asQuery = curUrl.substring(curUrl.indexOf("?", 0));
-            if (ASSearchUrl.indexOf("?", 0) != -1 && asQuery.indexOf("?", 0) == 0) {
-                destUrl = ASSearchUrl + '&' + asQuery.substring(1, asQuery.length);
-            } else {
-                if (typeof(asQuery[0]) != 'undefined' && asQuery[0] == '?') {
-                    if (asQuery.indexOf("?", 1) != -1) {
-                        // Second ?, fix URL
-                        asQuery = asQuery.substring(0, asQuery.indexOf("?", 1)) + '&' + asQuery.substring(asQuery.indexOf("?", 1) + 1, asQuery.length);
-                    }
-                }
-                destUrl = ASSearchUrl + asQuery;
-            }
-        }
-        return destUrl;
     },
 
     getFormSerialized: function(id_search) {
@@ -780,16 +734,6 @@ var as4Plugin = {
         $(document).off('change', '#search_filters select');
     },
 
-    initSearchFromResults: function(id_search, search_method, step_search) {
-        $(document).trigger('as4-Before-Init-Search-Results', [id_search, search_method, step_search]);
-
-        as4Plugin.removeOldEvents(id_search);
-
-        $(document).trigger('as4-After-Init-Search-Results', [id_search, search_method, step_search]);
-
-        as4Plugin.searchResponseCallback(id_search);
-    },
-
     initSliders: function() {
         $('.PM_ASCritRange').each(function() {
             sliderItem = $(this);
@@ -898,31 +842,6 @@ var as4Plugin = {
         } else {
             $(input_next_id_criterion_group).val('');
         }
-    },
-
-    // Clean duplicate parameters
-    cleanAjaxDuplicateParams: function(destUrl, params) {
-        var hasDuplicateValues = true;
-        var paramsSplit = params.split('&');
-        var destUrlSplit = destUrl.split('&');
-        var i = 0;
-        while (hasDuplicateValues) {
-            hasDuplicateValues = false;
-            var paramsListDestUrl = new Array();
-            $.each(destUrlSplit, function(index, value) {
-                if (typeof(value) != 'undefined') {
-                    if ($.inArray(value, paramsSplit) != -1 || $.inArray(value, paramsListDestUrl) != -1) {
-                        destUrlSplit.splice(index, 1);
-                        hasDuplicateValues = true;
-                    } else {
-                        paramsListDestUrl.push(value);
-                    }
-                }
-            });
-            i++;
-            if (i == 10) break;
-        }
-        return destUrlSplit.join('&');
     },
 
 

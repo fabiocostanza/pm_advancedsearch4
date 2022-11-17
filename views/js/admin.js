@@ -486,7 +486,6 @@ function unCheckAllChildrenCheckbox(e) {
 var allCriterionEnable = false;
 var fromMassAction = false;
 function enableAllCriterion4MassSeo(e) {
-    allCriterionEnable = !allCriterionEnable;
     var parentDiv = $(e).parent('div');
     var id_criterion_group = $(parentDiv).children('input[name=id_criterion_group]').val();
     if (!$('#criterion_group_' + id_criterion_group + ':visible').length && $('.seoSearchCriterionGroupSortable:visible').length >= msgMaxCriteriaGroupCountForMass) {

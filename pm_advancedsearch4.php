@@ -3007,7 +3007,6 @@ class PM_AdvancedSearch4 extends Core implements PrestaShop\PrestaShop\Core\Modu
             'as4_localCacheKey' => $as4_localCacheKey,
             'as4_localCache' => !empty($config['moduleCache']),
             'as4_blurEffect' => !empty($config['blurEffect']),
-            'tpl_dir' => _PS_THEME_DIR_,
         ));
     }
     public function renderWidget($hookName, array $configuration)
@@ -3293,13 +3292,17 @@ class PM_AdvancedSearch4 extends Core implements PrestaShop\PrestaShop\Core\Modu
         $front = in_array($context->controller->controller_type, array('front', 'modulefront'));
         $idSupplier = (int)Tools::getValue('id_supplier');
         $includeProductTable = !empty($idSupplier);
+
+        // MOD
         $schemas = false;
         if (isset($context->cookie) AND isset($context->cookie->schemas) and $context->cookie->schemas) {
             $schemas = $context->cookie->schemas;
         }
         if (isset($schemas_pr) AND is_bool($schemas_pr)) {
             $schemas = $schemas_pr;
-        }
+        } // MOD
+
+
         if ($getTotal) {
             $sql = 'SELECT COUNT(DISTINCT cp.`id_product`) AS total
                     FROM `'._DB_PREFIX_.'category_product` cp
@@ -3312,11 +3315,14 @@ class PM_AdvancedSearch4 extends Core implements PrestaShop\PrestaShop\Core\Modu
                         AND c.`nleft` >= '.(int)$category->nleft.'
                         AND c.`nright` <= '.(int)$category->nright.'
                     )
+                    LEFT JOIN `'._DB_PREFIX_.'product` p ON (
+                        p.`id_product` = cp.`id_product`
+                    )
                     WHERE c.`id_category` > 0 '.
-                (($front and !$schemas) ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '').
-                ($active ? ' AND product_shop.`active` = 1' : '').
-                ($idSupplier ? ' AND p.`id_supplier` = '.(int)$idSupplier : '').
-                (($front AND $schemas) ? ' AND p.`reference` LIKE "%SPL%"' : ' AND p.`reference` NOT LIKE "%SPL%"');
+                    (($front && !$schemas) ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '').
+                    ($active ? ' AND product_shop.`active` = 1' : '').
+                    ($idSupplier ? ' AND p.`id_supplier` = '.(int)$idSupplier : '').
+                    (($front && $schemas) ? ' AND p.`reference` LIKE "%SPL%"' : ' AND p.`reference` NOT LIKE "%SPL%"');
             return (int)SearchEngineDb::value($sql);
         }
         if ($pageNumber < 1) {
@@ -3343,6 +3349,7 @@ class PM_AdvancedSearch4 extends Core implements PrestaShop\PrestaShop\Core\Modu
         } elseif ($orderBy == 'reference') {
             $includeProductTable = true;
         }
+        $includeProductTable = true;
         if ($orderBy == 'price') {
             $orderBy = 'orderprice';
         }
@@ -3367,6 +3374,8 @@ class PM_AdvancedSearch4 extends Core implements PrestaShop\PrestaShop\Core\Modu
                 ON (product_shop.`id_product` = product_attribute_shop.`id_product` AND product_attribute_shop.`default_on` = 1 AND product_attribute_shop.`id_shop`='.(int)$context->shop->id.')':'').'
                 LEFT JOIN `'._DB_PREFIX_.'category` c ON (c.`id_category` = cp.`id_category`
                     AND c.`nleft` >= '.(int)$category->nleft.' AND c.`nright` <= '.(int)$category->nright.')
+                
+            
                 LEFT JOIN `'._DB_PREFIX_.'product_lang` pl
                     ON (product_shop.`id_product` = pl.`id_product`
                     AND pl.`id_lang` = '.(int)$idLang.Shop::addSqlRestrictionOnLang('pl').')
@@ -3381,9 +3390,9 @@ class PM_AdvancedSearch4 extends Core implements PrestaShop\PrestaShop\Core\Modu
                     Product::sqlStock('product_shop', 0) : '') . '
                 WHERE c.`id_category` > 0'
                     .($active ? ' AND product_shop.`active` = 1' : '')
-                    .(($front and !$schemas) ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '')
+                    .(($front && !$schemas) ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '')
+                    . (($front && $schemas) ? ' AND p.`reference` LIKE "%SPL%"' : ' AND p.`reference` NOT LIKE "%SPL%"') // MOD
                     .($idSupplier ? ' AND p.id_supplier = '.(int)$idSupplier : '')
-                    . (($front AND $schemas) ? ' AND p.`reference` LIKE "%SPL%"' : ' AND p.`reference` NOT LIKE "%SPL%"') // MOD
                     .' GROUP BY cp.`id_product`';
         if ($random === true) {
             $sql .= ' ORDER BY RAND() LIMIT '.(int)$randomNumberProducts;

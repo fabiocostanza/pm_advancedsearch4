@@ -995,7 +995,6 @@ abstract class SearchEngineUtils
             } else {
                 $where_criterion[] = 'ps.`visibility` IN ("both", "search")';
             }
-
             if (in_array(SearchEngineUtils::$productFilterListSource, SearchEngineUtils::$productFilterListSearchSource)) {
                 $where_criterion[] = 'ps.`visibility` IN ("both", "search")';
             } else {
@@ -1848,7 +1847,7 @@ abstract class SearchEngineUtils
         if (Core::isFilledArray($leftJoinWhereCriterion['where'])) {
             $sql .= ' WHERE ' . implode("\n AND ", $leftJoinWhereCriterion['where']);
         }
-        
+
         // MOD
         $schemas = false;
         if (isset($context->cookie) AND isset($context->cookie->schemas) and $context->cookie->schemas) {
